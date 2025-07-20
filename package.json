@@ -8,6 +8,7 @@
     "kill:all": "npm run kill:processes && npm run kill:ports",
     "android:emulator:list": "emulator -list-avds",
     "android:emulator:start:default": "emulator -avd $(emulator -list-avds | head -n 1) -no-boot-anim -no-snapshot-load -wipe-data",
+    "android:wait-for-device": "adb wait-for-device",
     "android:adb:device:list": "adb devices",
     "android:emulator:kill": "adb -s emulator-5554 emu kill",
     "android:emulator:kill:all": "adb devices | grep emulator | cut -f1 | while read line; do adb -s $line emu kill; done",
