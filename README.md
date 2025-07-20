@@ -46,4 +46,7 @@ You can start the emulator by following this tutorial https://docs.maestro.dev/g
 `adb wait-for-device`
 
 ### App Setup
-TBD
+1. Install Wikipedia app:
+`adb install -t -r -g apps/android/apks/wikipedia.apk`
+2. Uninstall Wikipedia app:
+`adb uninstall org.wikipedia`
