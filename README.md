@@ -5,7 +5,6 @@
 - [Installation](#installation)
   - [macOS/Linux/Windows (WSL)](#macoslinuxwindows-wsl)
   - [macOS (Homebrew)](#macos-homebrew)
-- [Project structure](#project-structure)
 - [Android Setup](#android-setup)
   - [Emulator Setup](#emulator-setup)
   - [Emulator Launch](#emulator-launch)
@@ -24,10 +23,6 @@ If you're on macOS, you can use Homebrew:
 brew tap mobile-dev-inc/tap
 brew install maestro
 ```
-
-
-## Project structure
-![Project Structure](./readme_images/project_structure.png)
 
 
 ## Android Setup
