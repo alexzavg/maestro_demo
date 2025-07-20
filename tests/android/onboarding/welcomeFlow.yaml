@@ -1,0 +1,28 @@
+# Welcome screen test flow
+appId: com.yourapp.package  # Replace with your app's package name
+
+# Test metadata
+metadata:
+  author: Your Name
+  description: Tests the welcome and onboarding flow
+  tags: [onboarding, android]
+
+# Test steps
+- launchApp
+- assertVisible: "welcome_screen"
+- assertVisible: "get_started_button"
+- tapOn: "get_started_button"
+- assertVisible: "onboarding_screen"
+- assertVisible: "next_button"
+- tapOn: "next_button"
+- assertVisible: "permissions_screen"
+- tapOn: "allow_button"
+- assertVisible: "home_screen"
+
+# Teardown (runs after test completes, pass or fail)
+- clearState
+
+# Error handling
+onError:
+  - takeScreenshot: "error_screenshot"
+  - log: "Test failed, check error_screenshot.png"

@@ -1,0 +1,43 @@
+# Login flow test
+appId: com.yourapp.package  # Replace with your app's package name
+
+# Test data
+config:
+  testUser:
+    email: "test@example.com"
+    password: "securePassword123"
+
+# Test steps
+- launchApp
+- assertVisible: "login_screen"
+
+# Input email
+- tapOn: "email_input"
+- inputText: "email_input", "${config.testUser.email}"
+
+# Input password
+- tapOn: "password_input"
+- inputText: "password_input", "${config.testUser.password}"
+
+# Submit login form
+- tapOn: "login_button"
+
+# Verify successful login
+- assertVisible: "home_screen"
+- assertNotVisible: "login_screen"
+
+# Verify welcome message contains username
+- assertVisible: "welcome_message"
+- runScript: |
+    const welcomeText = element(by.id("welcome_message")).text;
+    if (!welcomeText.includes("Welcome")) {
+      throw new Error("Welcome message not found");
+    }
+
+# Teardown
+- clearState
+
+# Error handling
+onError:
+  - takeScreenshot: "login_error"
+  - log: "Login test failed, check login_error.png"

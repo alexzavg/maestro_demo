@@ -1,0 +1,23 @@
+# Common test helpers and reusable steps
+
+- id: assertElementVisible
+  description: Assert that an element is visible
+  code: |
+    (elementId) => {
+      const element = element(by.id(elementId));
+      return expect(element).toBeVisible();
+    }
+
+- id: tapOn
+  description: Tap on an element
+  code: |
+    (elementId) => {
+      return element(by.id(elementId)).tap();
+    }
+
+- id: inputText
+  description: Input text into a field
+  code: |
+    (elementId, text) => {
+      return element(by.id(elementId)).typeText(text);
+    }
