@@ -31,17 +31,14 @@ You can start the emulator by following this tutorial https://docs.maestro.dev/g
 
 ### Emulator Launch
 1. List all available Android emulators:
-`emulator -list-avds`
-2. Start your emulator (replace `Your_Emulator_Name` with your actual emulator name from the list above):
-`emulator -avd Your_Emulator_Name -no-boot-anim -no-snapshot-load -wipe-data`
-- no-boot-anim: Disables the boot animation for faster startup
-- no-snapshot-load: Ensures a clean state
-- wipe-data: Clears all data (use this for a fresh start)
+`npm run android:emulator:list`
+2. Start your emulator:
+`npm run android:emulator:start:default`
 3. Wait for the emulator to fully boot up. You can check if it's ready with:
-`adb wait-for-device`
+`npm run android:wait-for-device`
 
-### App Setup
-1. Install Wikipedia app:
-`adb install -t -r -g apps/android/apks/wikipedia.apk`
-2. Uninstall Wikipedia app:
-`adb uninstall org.wikipedia`
+### App Setup (TBD)
+1. Install test app:
+``
+2. Uninstall test app:
+``
