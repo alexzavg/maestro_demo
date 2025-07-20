@@ -1,0 +1,23 @@
+{
+  "name": "maestro-demo",
+  "version": "1.0.0",
+  "description": "Maestro mobile testing demo",
+  "scripts": {
+    "kill:ports": "sh ./.scripts/kill_ports.sh",
+    "kill:processes": "sh ./.scripts/kill_processes.sh",
+    "kill:all": "npm run kill:processes && npm run kill:ports",
+    "emulator:list": "emulator -list-avds",
+    "emulator:start": "echo 'Please run: npm run emulator:start -- <avd_name>', echo 'Available AVDs:', emulator -list-avds",
+    "emulator:start:default": "emulator -avd $(emulator -list-avds | head -n 1) -no-boot-anim -no-snapshot-load -wipe-data",
+    "device:list": "adb devices",
+    "device:start": "maestro start-device",
+    "device:start:first": "maestro start-device --device $(adb devices | grep 'emulator' | head -1 | cut -f1)",
+    "device:stop": "maestro stop-device"
+  },
+  "devDependencies": {
+    "maestro": "latest"
+  },
+  "keywords": ["maestro", "mobile", "testing", "android"],
+  "author": "",
+  "license": "MIT"
+}
