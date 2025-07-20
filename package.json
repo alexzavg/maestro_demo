@@ -10,11 +10,11 @@
     "android:emulator:start:default": "emulator -avd $(emulator -list-avds | head -n 1) -no-boot-anim -no-snapshot-load -wipe-data",
     "android:adb:device:list": "adb devices",
     "android:emulator:kill": "adb -s emulator-5554 emu kill",
+    "android:emulator:kill:all": "adb devices | grep emulator | cut -f1 | while read line; do adb -s $line emu kill; done",
     "android:install:wikipedia": "adb install -t -r -g apps/android/apks/wikipedia.apk",
     "android:uninstall:wikipedia": "adb uninstall org.wikipedia",
-    "device:start": "maestro start-device",
-    "device:start:first": "maestro start-device --device $(adb devices | grep 'emulator' | head -1 | cut -f1)",
-    "device:stop": "maestro stop-device"
+    "maestro:android:device:start": "maestro start-device --platform android --os-version 34 --device-locale en_US",
+    "maestro:android:device:stop": "maestro device stop"
   },
   "devDependencies": {
     "maestro": "latest"
