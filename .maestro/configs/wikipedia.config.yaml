@@ -1,0 +1,4 @@
+flows:
+  - wikipedia/*.spec.yaml
+
+timeout: 60000
