@@ -1,4 +1,7 @@
 flows:
   - wikipedia/*.spec.yaml
 
+excludeTags:
+  - util
+
 timeout: 60000

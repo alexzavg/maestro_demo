@@ -1,4 +1,5 @@
-appId: ${env.appId}
-app: ${env.app}
+appId: ${appId}
+tags:
+  - smokeTest
 ---
 - launchApp
