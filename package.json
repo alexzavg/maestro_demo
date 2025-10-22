@@ -14,9 +14,13 @@
     "android:install:wikipedia": "adb install -t -r -g ./apps/android/wikipedia/wikipedia.apk",
     "android:uninstall:wikipedia": "adb uninstall org.wikipedia || true",
 
+    "report:delete": "rm -rf test-results/*",
+    "report:open": "open test-results/wikipedia.html",
+    "report:ai:open": "open test-results/*/ai-report-StartApp.spec.html",
+
     "maestro:inspect:wikipedia": "maestro studio --config .maestro/configs/wikipedia.config.yaml -e appId=org.wikipedia",
     "maestro:record:wikipedia": "maestro record --config .maestro/configs/wikipedia.config.yaml -e appId=org.wikipedia",
-    "maestro:test:wikipedia": "maestro test .maestro/flows --config .maestro/configs/wikipedia.config.yaml -e appId=org.wikipedia --format JUNIT --output .maestro/test-results/outputs"
+    "maestro:test:wikipedia": "maestro test .maestro/flows --config .maestro/configs/wikipedia.config.yaml -e appId=org.wikipedia --format html --output test-results/wikipedia.html"
   },
   "devDependencies": {
     "maestro": "latest"

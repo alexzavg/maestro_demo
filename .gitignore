@@ -1,6 +1,6 @@
 # Maestro
 .maestro/outputs/
-.maestro/test-results/
+test-results
 
 # Node
 node_modules/
