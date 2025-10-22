@@ -35,7 +35,7 @@ npm run maestro:device:stop
 ```
 
 ## IMPORTANT
-If your emulator/app is frozen, kill the ports, processes and emulators manually with these commands:
+It is strongly suggested to kill the ports, processes and emulators manually (e.g. if your emulator/app is frozen or if you're done with the day and logging off):
 ```bash
 npm run kill:ports
 npm run kill:processes
