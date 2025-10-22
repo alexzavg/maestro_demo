@@ -7,11 +7,16 @@
     "kill:ports": ".scripts/kill_ports.sh",
     "kill:processes": ".scripts/kill_processes.sh",
     "kill:emulators": "adb devices | grep emulator | cut -f1 | while read d; do adb -s \"$d\" emu kill; done",
+
     "maestro:device:start:android": "maestro start-device --platform android --os-version 34 --device-locale en_US",
     "maestro:device:stop": "adb emu kill",
-    "maestro:inspect:mode": "maestro studio --config .maestro/configs/wikipedia.config.yaml -e env=.maestro/env/local.env.yaml",
-    "maestro:record:mode": "maestro record --config .maestro/configs/wikipedia.config.yaml -e env=.maestro/env/local.env.yaml",
-    "maestro:test:local": "maestro test .maestro/flows --config .maestro/configs/wikipedia.config.yaml -e env=.maestro/env/local.env.yaml --format JUNIT --output .maestro/outputs"
+
+    "android:install:wikipedia": "adb install -t -r -g ./apps/android/wikipedia/wikipedia.apk",
+    "android:uninstall:wikipedia": "adb uninstall org.wikipedia || true",
+
+    "maestro:inspect:wikipedia": "maestro studio --config .maestro/configs/wikipedia.config.yaml -e appId=org.wikipedia",
+    "maestro:record:wikipedia": "maestro record --config .maestro/configs/wikipedia.config.yaml -e appId=org.wikipedia",
+    "maestro:test:wikipedia": "maestro test .maestro/flows --config .maestro/configs/wikipedia.config.yaml -e appId=org.wikipedia --format JUNIT --output .maestro/test-results/outputs"
   },
   "devDependencies": {
     "maestro": "latest"
