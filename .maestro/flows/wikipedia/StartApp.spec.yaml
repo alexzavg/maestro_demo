@@ -1,0 +1,4 @@
+appId: ${env.appId}
+app: ${env.app}
+---
+- launchApp

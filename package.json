@@ -1,26 +1,19 @@
 {
   "name": "maestro-demo",
   "version": "1.0.0",
+  "private": false,
   "description": "Maestro mobile testing demo",
   "scripts": {
-    "kill:ports": "sh ./.scripts/kill_ports.sh",
-    "kill:processes": "sh ./.scripts/kill_processes.sh",
-    "kill:all": "npm run kill:processes && npm run kill:ports",
-    "android:emulator:list": "emulator -list-avds",
-    "android:emulator:start:default": "emulator -avd $(emulator -list-avds | head -n 1) -no-boot-anim -no-snapshot-load -wipe-data",
-    "android:wait-for-device": "adb wait-for-device",
-    "android:adb:device:list": "adb devices",
-    "android:emulator:kill": "adb -s emulator-5554 emu kill",
-    "android:emulator:kill:all": "adb devices | grep emulator | cut -f1 | while read line; do adb -s $line emu kill; done",
-    "android:install:wikipedia": "adb install -t -r -g apps/android/apks/wikipedia.apk",
-    "android:uninstall:wikipedia": "adb uninstall org.wikipedia",
-    "maestro:android:device:start": "maestro start-device --platform android --os-version 34 --device-locale en_US",
-    "maestro:android:device:stop": "maestro device stop"
+    "kill:ports": ".scripts/kill_ports.sh",
+    "kill:processes": ".scripts/kill_processes.sh",
+    "kill:emulators": "adb devices | grep emulator | cut -f1 | while read d; do adb -s \"$d\" emu kill; done",
+    "maestro:device:start:android": "maestro start-device --platform android --os-version 34 --device-locale en_US",
+    "maestro:device:stop": "adb emu kill",
+    "maestro:inspect:mode": "maestro studio --config .maestro/configs/wikipedia.config.yaml -e env=.maestro/env/local.env.yaml",
+    "maestro:record:mode": "maestro record --config .maestro/configs/wikipedia.config.yaml -e env=.maestro/env/local.env.yaml",
+    "maestro:test:local": "maestro test .maestro/flows --config .maestro/configs/wikipedia.config.yaml -e env=.maestro/env/local.env.yaml --format JUNIT --output .maestro/outputs"
   },
   "devDependencies": {
     "maestro": "latest"
-  },
-  "keywords": ["maestro", "mobile", "testing", "android"],
-  "author": "",
-  "license": "MIT"
+  }
 }
