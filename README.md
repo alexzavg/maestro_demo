@@ -34,6 +34,20 @@ npm run android:uninstall:wikipedia
 npm run maestro:device:stop
 ```
 
+## Reports
+1. Delete old reports
+```bash
+npm run report:delete
+```
+2. Open report
+```bash
+npm run report:open
+```
+3. Open AI report
+```bash
+npm run report:ai:open
+```
+
 ## IMPORTANT
 It is strongly suggested to kill the ports, processes and emulators manually (e.g. if your emulator/app is frozen or if you're done with the day and logging off):
 ```bash
