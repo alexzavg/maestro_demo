@@ -11,23 +11,60 @@ brew tap mobile-dev-inc/tap
 brew install maestro
 ```
 
-# Usage (Android)
-1. Get the app apk (download the latest build from the dev branch)
+# Run on Android
+
+## Quick Usage
+1. Perform env cleanup
+```bash
+npm run env:cleanup
+```
+2. Perform env setup
+```bash
+npm run env:setup
+```
+3. Run the tests
+```bash
+npm run maestro:test:wikipedia
+```
+4. Perform env teardown
+```bash
+npm run env:teardown
+```
+### IMPORTANT
+It is suggested to perform env cleanup before each run to avoid any potential issues with ports, processes and emulators.
+So please repeat the cycle for the most optimal experience.
+
+Optional:
+- Run Maestro Studio for element inspection (this will open Maestro Studio in your default browser on port 9999)
+```bash
+npm run maestro:inspect
+```
+- Open report
+```bash
+npm run report:open
+```
+- Open AI report
+```bash
+npm run report:ai:open
+```
+
+## Detailed Usage
+1. Get the app apk (download the latest build from the dev branch / ask your dev team on how to get it)
 2. Start an Android emulator
 ```bash
 npm run maestro:device:start:android
 ```
 3. Install the app
 ```bash
-npm run android:install:wikipedia
+npm run android:install:wikipedia (replace 'wikipedia' with your app apk)
 ```
-4. Run the tests
+4. Run tests
 ```bash
-npm run maestro:test:wikipedia
+npm run maestro:test:wikipedia (adjust paths for .maestro/flows and .maestro/configs with your own settings)
 ```
 5. Uninstall the app
 ```bash
-npm run android:uninstall:wikipedia
+npm run android:uninstall:wikipedia (replace 'wikipedia' with your app apk)
 ```
 6. Stop the emulator
 ```bash

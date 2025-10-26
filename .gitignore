@@ -1,13 +1,14 @@
 # Maestro
 .maestro/outputs/
 test-results
+recordings
 
 # Node
 node_modules/
 *.log
 
 # Binaries
-*.apk
+#*.apk
 *.aab
 *.ipa
 

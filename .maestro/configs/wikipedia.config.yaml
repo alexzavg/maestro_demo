@@ -3,6 +3,7 @@ flows:
 
 excludeTags:
   - util
+  - recordTemplate
 
 timeout: 60000
 
