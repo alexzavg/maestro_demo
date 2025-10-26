@@ -47,6 +47,10 @@ npm run report:open
 ```bash
 npm run report:ai:open
 ```
+- Record a test (this example will record a test for the `LaunchStepper` spec and save it to the `recordings` dir)
+```bash
+npm run maestro:record:wikipedia
+```
 
 ## Detailed Usage
 1. Get the app apk (download the latest build from the dev branch / ask your dev team on how to get it)
