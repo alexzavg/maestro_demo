@@ -4,6 +4,12 @@
   "private": false,
   "description": "Maestro mobile testing demo",
   "scripts": {
+    "env:cleanup": "npm run kill:ports && npm run kill:processes && npm run kill:emulators && npm run report:delete",
+    "env:setup": "npm run maestro:device:start:android && npm run android:install:wikipedia",
+    "env:teardown": "npm run android:uninstall:wikipedia && npm run maestro:device:stop",
+    "maestro:inspect": "maestro studio",
+    "maestro:test:wikipedia": "maestro test .maestro/flows --config .maestro/configs/wikipedia.config.yaml -e appId=org.wikipedia --format html --output test-results/wikipedia.html",
+    
     "kill:ports": ".scripts/kill_ports.sh",
     "kill:processes": ".scripts/kill_processes.sh",
     "kill:emulators": "adb devices | grep emulator | cut -f1 | while read d; do adb -s \"$d\" emu kill; done",
@@ -16,11 +22,10 @@
 
     "report:delete": "rm -rf test-results/*",
     "report:open": "open test-results/wikipedia.html",
-    "report:ai:open": "open test-results/*/ai-report-StartApp.spec.html",
+    "report:ai:open": "open test-results/*/ai-report-*.spec.html",
 
-    "maestro:inspect:wikipedia": "maestro studio --config .maestro/configs/wikipedia.config.yaml -e appId=org.wikipedia",
-    "maestro:record:wikipedia": "maestro record --config .maestro/configs/wikipedia.config.yaml -e appId=org.wikipedia",
-    "maestro:test:wikipedia": "maestro test .maestro/flows --config .maestro/configs/wikipedia.config.yaml -e appId=org.wikipedia --format html --output test-results/wikipedia.html"
+    "recordings:delete": "rm -rf recordings/*",
+    "maestro:record:wikipedia": "maestro record --local .maestro/flows/wikipedia/LaunchStepper.spec.yaml recordings/LaunchStepper.mp4 --config .maestro/configs/wikipedia.config.yaml -e appId=org.wikipedia"
   },
   "devDependencies": {
     "maestro": "latest"
