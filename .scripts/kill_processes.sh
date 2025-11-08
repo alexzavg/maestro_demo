@@ -1,6 +1,6 @@
 #!/bin/bash
 
-echo "💣 Killing all automation frameworks-related processes"
+echo "💣 Killing all automation framework-related processes"
 
 MASKS=("maestro" "qemu-system" "emulator" "adb" "Android Emulator" "AndroidStudio" "studio")
 
@@ -14,4 +14,4 @@ for MASK in "${MASKS[@]}"; do
   fi
 done
 
-echo "✅ All matching automation frameworks processes killed."
+echo "✅ All matching automation framework processes killed."
