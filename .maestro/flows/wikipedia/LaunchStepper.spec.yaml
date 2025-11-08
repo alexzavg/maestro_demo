@@ -2,7 +2,8 @@ appId: ${appId}
 tags:
   - smokeTest
 ---
-- launchApp
+- launchApp:
+    clearState: true
 - assertVisible:
     id: "org.wikipedia:id/view_onboarding_page_image_centered"
 - assertVisible: "The Free Encyclopedia
