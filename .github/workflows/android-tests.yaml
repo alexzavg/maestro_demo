@@ -11,8 +11,8 @@ jobs:
 
       - uses: actions/setup-java@v3
         with:
-          distribution: 'adopt'
-          java-version: '11'
+          distribution: 'temurin'
+          java-version: '21'
 
       - name: Install Maestro CLI
         shell: bash
