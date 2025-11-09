@@ -14,7 +14,6 @@ jobs:
           distribution: 'adopt'
           java-version: '11'
 
-      # Install Maestro CLI with simple retry to mitigate 502s
       - name: Install Maestro CLI
         shell: bash
         run: |
@@ -26,8 +25,11 @@ jobs:
             echo "Maestro install failed (attempt $i), retrying in 10s..."
             sleep 10
           done
+          export PATH="$HOME/.maestro/bin:$PATH"
           echo "$HOME/.maestro/bin" >> $GITHUB_PATH
-          maestro --version
+
+      - name: Verify Maestro
+        run: maestro --version
 
       - uses: reactivecircus/android-emulator-runner@v2
         with:
