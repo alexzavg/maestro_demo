@@ -1,3 +1,12 @@
+# Table of Contents
+
+- [Installation](#installation)
+- [Run on Android](#run-on-android)
+- [Quick Usage](#quick-usage)
+- [Detailed Usage](#detailed-usage)
+- [Reports](#reports)
+- [Troubleshooting](#troubleshooting)
+
 # Installation (MacOS)
 
 1. Clone the repository
