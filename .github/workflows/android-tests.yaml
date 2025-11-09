@@ -37,7 +37,7 @@ jobs:
       - name: Install Android SDK packages
         shell: bash
         run: |
-          yes | sdkmanager --licenses >/dev/null
+          yes | sdkmanager --licenses || true
           sdkmanager --install \
             'platform-tools' \
             'emulator' \
