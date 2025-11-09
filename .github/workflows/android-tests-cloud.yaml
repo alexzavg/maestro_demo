@@ -1,0 +1,32 @@
+# Documentation: https://docs.maestro.dev/cloud/ci-integration/github-actions
+name: Android Tests (Cloud)
+
+on:
+  workflow_dispatch:
+
+jobs:
+  maestro-cloud:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Java
+        uses: actions/setup-java@v4
+        with:
+          java-version: 21
+          distribution: temurin
+
+      - name: Upload APK and run flows on Maestro Cloud
+        uses: mobile-dev-inc/action-maestro-cloud@v2
+        with:
+          api-key: ${{ secrets.MAESTRO_API_KEY }}
+          project-id: ${{ secrets.MAESTRO_PROJECT_ID }}
+          app-file: apps/android/wikipedia/wikipedia.apk
+          workspace: .maestro/flows
+          env: |
+            appId=org.wikipedia
+          android-api-level: 34
+          device-locale: en_US
+          exclude-tags: util,recordTemplate
+          timeout: 60000
