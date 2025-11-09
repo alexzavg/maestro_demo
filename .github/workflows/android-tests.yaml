@@ -31,16 +31,25 @@ jobs:
       - name: Verify Maestro
         run: maestro --version
 
-      - uses: reactivecircus/android-emulator-runner@v2
-        with:
-          api-level: 31
-          arch: x86_64
-          target: google_apis
-          ram-size: 4096M
-          emulator-boot-timeout: 1200
-          emulator-options: -no-window -gpu host -no-snapshot -noaudio -no-boot-anim -camera-back none -camera-front none
-          script: |
+      - name: Start Android device
+        shell: bash
+        run: |
+          npm run maestro:device:start:android
             adb wait-for-device
+            for i in $(seq 1 60); do
+              STATE="$(adb get-state 2>/dev/null || true)"
+              BOOT="$(adb shell getprop sys.boot_completed 2>/dev/null | tr -d '\r' || true)"
+              if [ "$STATE" = "device" ] && [ "$BOOT" = "1" ]; then
+                break
+              fi
+              adb reconnect || true
+              sleep 5
+            done
+            adb shell input keyevent 82 || true
+
+      - name: Install APK and run Maestro tests
+        shell: bash
+        run: |
             npm run android:install:wikipedia
             maestro test .maestro/flows \
               --config .maestro/configs/wikipedia.config.yaml \
