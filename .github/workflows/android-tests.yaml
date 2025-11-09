@@ -1,22 +1,51 @@
 name: Android Tests
 
 on:
-  workflow_dispatch
+  workflow_dispatch:
 
 jobs:
   test:
     runs-on: macos-latest
     steps:
       - uses: actions/checkout@v3
+
       - uses: actions/setup-java@v3
         with:
           distribution: 'adopt'
           java-version: '11'
-      - uses: dniHze/maestro-test-action@v1
+
+      # Install Maestro CLI with simple retry to mitigate 502s
+      - name: Install Maestro CLI
+        shell: bash
+        run: |
+          set -e
+          for i in {1..5}; do
+            if curl -fsSL https://get.maestro.mobile.dev | bash; then
+              break
+            fi
+            echo "Maestro install failed (attempt $i), retrying in 10s..."
+            sleep 10
+          done
+          echo "$HOME/.maestro/bin" >> $GITHUB_PATH
+          maestro --version
+
       - uses: reactivecircus/android-emulator-runner@v2
         with:
           api-level: 34
           arch: x86_64
           ram-size: 2048M
           target: default
-          script: maestro test .maestro/flows --config .maestro/configs/wikipedia.config.yaml -e appId=org.wikipedia --format html --output test-results/wikipedia.html
+          script: |
+            adb wait-for-device
+            maestro test .maestro/flows \
+              --config .maestro/configs/wikipedia.config.yaml \
+              -e appId=org.wikipedia \
+              --format html \
+              --output test-results/wikipedia.html
+
+      - name: Upload test report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: maestro-wikipedia-report
+          path: test-results
