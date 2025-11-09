@@ -25,7 +25,9 @@
     "report:ai:open": "open test-results/*/ai-report-*.spec.html",
 
     "recordings:delete": "rm -rf recordings/*",
-    "maestro:record:wikipedia": "maestro record --local .maestro/flows/wikipedia/LaunchStepper.spec.yaml recordings/LaunchStepper.mp4 --config .maestro/configs/wikipedia.config.yaml -e appId=org.wikipedia"
+    "maestro:record:wikipedia": "maestro record --local .maestro/flows/wikipedia/conditional/LaunchStepper.spec.yaml recordings/LaunchStepper.mp4 --config .maestro/configs/wikipedia.config.yaml -e appId=org.wikipedia",
+
+    "maestro:chat": "maestro chat"
   },
   "devDependencies": {
     "maestro": "latest"
