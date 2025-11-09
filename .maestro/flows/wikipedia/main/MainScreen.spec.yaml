@@ -1,0 +1,17 @@
+appId: ${appId}
+tags:
+  - smokeTest
+---
+- launchApp:
+    clearState: true
+
+- runFlow:
+    when:
+      visible:
+        id: "org.wikipedia:id/fragment_onboarding_skip_button"
+    commands:
+        - tapOn:
+            id: "org.wikipedia:id/fragment_onboarding_skip_button"
+
+- assertVisible:
+    id: "org.wikipedia:id/view_announcement_header_image"

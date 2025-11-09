@@ -1,0 +1,26 @@
+appId: ${appId}
+tags:
+  - smokeTest
+---
+- launchApp:
+    clearState: true
+
+- runFlow:
+    when:
+      visible:
+        id: "org.wikipedia:id/fragment_onboarding_skip_button"
+    commands:
+        - assertVisible:
+            id: "org.wikipedia:id/view_onboarding_page_image_centered"
+        - assertVisible: "The Free Encyclopedia
+
+            …in over 300 languages"
+        - assertVisible: "We’ve found the following on your device:"
+        - assertVisible: "1.\t\tEnglish"
+        - assertVisible: "ADD OR EDIT LANGUAGES"
+        - assertVisible:
+            id: "org.wikipedia:id/fragment_onboarding_skip_button"
+        - assertVisible:
+            id: "org.wikipedia:id/view_onboarding_page_indicator"
+        - assertVisible:
+            id: "org.wikipedia:id/fragment_onboarding_forward_button"

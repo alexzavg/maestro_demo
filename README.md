@@ -96,3 +96,10 @@ npm run kill:ports
 npm run kill:processes
 npm run kill:emulators
 ```
+
+## Troubleshooting
+### "App not installed" error
+If you have Maestro Studio open and are trying to run the tests, you might get an "App not installed" error. 
+This is because Maestro Studio is using the same emulator as the tests. 
+To fix this, you need to close Maestro Studio and run the tests again.
+- (Original workaround message on GitHub)[https://github.com/mobile-dev-inc/Maestro/issues/1104#issuecomment-1872975969]

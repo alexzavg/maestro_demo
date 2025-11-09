@@ -1,5 +1,6 @@
 flows:
-  - wikipedia/*.spec.yaml
+  - wikipedia/main/*.spec.yaml
+  - wikipedia/conditional/*.spec.yaml
 
 excludeTags:
   - util
