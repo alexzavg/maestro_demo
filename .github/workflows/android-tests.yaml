@@ -52,7 +52,10 @@ jobs:
           adb kill-server || true
           adb start-server
 
-          yes "no" | avdmanager create avd -n "$AVD_NAME" -k "system-images;android-34;google_apis;x86_64" --force
+          echo no | avdmanager create avd -n "$AVD_NAME" \
+            -k "system-images;android-34;google_apis;x86_64" \
+            --device "pixel_6" \
+            --force
 
           "$ANDROID_SDK_ROOT/emulator/emulator" -avd "$AVD_NAME" \
             -no-window -gpu host -no-snapshot -noaudio -no-boot-anim -camera-back none -camera-front none -wipe-data \
