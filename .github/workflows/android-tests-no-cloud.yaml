@@ -1,4 +1,4 @@
-name: Android Tests
+name: Android Tests (No Cloud)
 
 on:
   workflow_dispatch:
@@ -13,12 +13,13 @@ jobs:
       - uses: actions/setup-java@v4
         with:
           distribution: 'temurin'
-          java-version: '17'
+          java-version: '21'
 
+      # adb device offline issue https://github.com/ReactiveCircus/android-emulator-runner/issues/266#issuecomment-3508427461
       - name: Start emulator and run Maestro tests
         uses: reactivecircus/android-emulator-runner@v2
         with:
-          api-level: 29
+          api-level: 34
           arch: x86_64
           target: google_apis
           ram-size: 2048M
