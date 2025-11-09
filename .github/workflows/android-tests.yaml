@@ -6,98 +6,34 @@ on:
 jobs:
   test:
     runs-on: macos-13
-    steps:
-      - uses: actions/checkout@v3
 
-      - uses: actions/setup-java@v3
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-java@v4
         with:
           distribution: 'temurin'
           java-version: '21'
 
-      - name: Install Maestro CLI
-        shell: bash
-        run: |
-          set -e
-          for i in {1..5}; do
-            if curl -fsSL https://get.maestro.mobile.dev | bash; then
-              break
-            fi
-            echo "Maestro install failed (attempt $i), retrying in 10s..."
-            sleep 10
-          done
-          export PATH="$HOME/.maestro/bin:$PATH"
-          echo "$HOME/.maestro/bin" >> $GITHUB_PATH
+      # Install Maestro CLI via the Marketplace action
+      - name: Install Maestro
+        uses: dniHze/maestro-test-action@v1
 
-      - name: Verify Maestro
-        run: maestro --version
-
-      - name: Setup Android SDK
-        uses: android-actions/setup-android@v3
-
-      - name: Install Android SDK packages
-        shell: bash
-        run: |
-          yes | sdkmanager --licenses || true
-          sdkmanager --install \
-            'platform-tools' \
-            'emulator' \
-            'platforms;android-34' \
-            'system-images;android-34;google_apis;x86_64'
-
-      - name: Start Android emulator (manual)
-        shell: bash
-        env:
-          AVD_NAME: Maestro_Pixel_6_API_34
-        run: |
-          adb kill-server || true
-          adb start-server
-
-          echo no | avdmanager create avd -n "$AVD_NAME" \
-            -k "system-images;android-34;google_apis;x86_64" \
-            --device "pixel_6" \
-            --force
-
-          "$ANDROID_SDK_ROOT/emulator/emulator" -avd "$AVD_NAME" \
-            -no-window -gpu host -no-snapshot -noaudio -no-boot-anim -camera-back none -camera-front none -wipe-data \
-            > /dev/null 2>&1 &
-
-          adb wait-for-device
-          for i in $(seq 1 120); do
-            STATE="$(adb get-state 2>/dev/null || true)"
-            BOOT_SYS="$(adb shell getprop sys.boot_completed 2>/dev/null | tr -d '\r' || true)"
-            BOOT_DEV="$(adb shell getprop dev.bootcomplete 2>/dev/null | tr -d '\r' || true)"
-            BOOTANIM="$(adb shell getprop init.svc.bootanim 2>/dev/null | tr -d '\r' || true)"
-            echo "ADB STATE=$STATE SYS=$BOOT_SYS DEV=$BOOT_DEV BOOTANIM=$BOOTANIM"
-            if [ "$STATE" = "device" ] && { [ "$BOOT_SYS" = "1" ] || [ "$BOOT_DEV" = "1" ] || [ "$BOOTANIM" = "stopped" ]; }; then
-              break
-            fi
-            adb reconnect || true
-            sleep 5
-          done
-
-          for i in $(seq 1 60); do
-            if adb shell pm path android >/dev/null 2>&1; then
-              break
-            fi
-            sleep 2
-          done
-
-          if [ "$(adb get-state 2>/dev/null || true)" != "device" ]; then
-            echo "Device did not come online" >&2
-            exit 1
-          fi
-
-          adb shell input keyevent 82 || true
-
-      - name: Install APK and run Maestro tests
-        shell: bash
-        run: |
-          npm run android:install:wikipedia
-          maestro test .maestro/flows \
-            --config .maestro/configs/wikipedia.config.yaml \
-            -e appId=org.wikipedia \
-            --format html \
-            --output test-results/wikipedia.html
+      # Boot emulator and run your exact commands
+      - name: Start emulator and run Maestro tests
+        uses: reactivecircus/android-emulator-runner@v2
+        with:
+          api-level: 34
+          arch: x86_64
+          target: google_apis
+          ram-size: 2048M
+          script: |
+            npm run android:install:wikipedia
+            maestro test .maestro/flows \
+              --config .maestro/configs/wikipedia.config.yaml \
+              -e appId=org.wikipedia \
+              --format html \
+              --output test-results/wikipedia.html
 
       - name: Upload test report
         if: always()
