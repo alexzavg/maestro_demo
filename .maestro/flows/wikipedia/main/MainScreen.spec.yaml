@@ -5,13 +5,18 @@ tags:
 - launchApp:
     clearState: true
 
+- runScript: 
+    file: "../../../src/pages/MainScreen.page.js"
+- runScript: 
+    file: "../../../src/pages/LaunchStepper.page.js"
+
 - runFlow:
     when:
       visible:
-        id: "org.wikipedia:id/fragment_onboarding_skip_button"
+        id: ${output.launchStepper.skipBtn}
     commands:
         - tapOn:
-            id: "org.wikipedia:id/fragment_onboarding_skip_button"
+            id: ${output.launchStepper.skipBtn}
 
 - assertVisible:
-    id: "org.wikipedia:id/view_announcement_header_image"
+    id: ${output.mainScreen.headerImg}
