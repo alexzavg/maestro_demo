@@ -38,7 +38,7 @@ jobs:
           target: google_apis
           ram-size: 2048M
           disable-linux-hw-accel: true
-          emulator-boot-timeout: 1200
+          emulator-boot-timeout: 120
           emulator-options: -no-window -gpu swiftshader_indirect -no-snapshot -noaudio -no-boot-anim
           script: |
             adb wait-for-device
