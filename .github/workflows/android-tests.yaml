@@ -38,11 +38,27 @@ jobs:
           target: google_apis
           ram-size: 2048M
           disable-linux-hw-accel: true
-          emulator-boot-timeout: 120
-          emulator-options: -no-window -gpu swiftshader_indirect -no-snapshot -noaudio -no-boot-anim
+          emulator-boot-timeout: 1200
+          emulator-options: -no-window -accel off -gpu swiftshader_indirect -no-snapshot -noaudio -no-boot-anim
           script: |
+            # Stabilize ADB and wait for boot
+            adb kill-server || true
+            adb start-server
             adb wait-for-device
+
+            # Extra wait for full boot completion
+            until [[ "$(adb shell getprop sys.boot_completed | tr -d '\r')" == "1" ]]; do
+              echo "Waiting for emulator to fully boot..."
+              sleep 5
+            done
+
+            # Unlock screen just in case
+            adb shell input keyevent 82 || true
+
+            # Install the app
             npm run android:install:wikipedia
+
+            # Run Maestro tests
             maestro test .maestro/flows \
               --config .maestro/configs/wikipedia.config.yaml \
               -e appId=org.wikipedia \
