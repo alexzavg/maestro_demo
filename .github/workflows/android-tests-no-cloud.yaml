@@ -26,7 +26,7 @@ jobs:
           script: |
             npm run android:install:wikipedia
             maestro test .maestro/flows \
-              --config .maestro/configs/wikipedia.config.yaml \
+              --config .maestro/config.yaml \
               -e appId=org.wikipedia \
               --format html \
               --output test-results/wikipedia.html
