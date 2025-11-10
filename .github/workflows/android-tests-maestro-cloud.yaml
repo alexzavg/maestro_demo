@@ -1,5 +1,5 @@
 # Documentation: https://docs.maestro.dev/cloud/ci-integration/github-actions
-name: Android Tests (Cloud)
+name: Android Tests (Maestro Cloud)
 
 on:
   workflow_dispatch:
@@ -10,12 +10,6 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
-
-      - name: Set up Java
-        uses: actions/setup-java@v4
-        with:
-          java-version: 21
-          distribution: temurin
 
       - name: Upload APK and run flows on Maestro Cloud
         uses: mobile-dev-inc/action-maestro-cloud@v2
