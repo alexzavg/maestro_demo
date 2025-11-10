@@ -1,0 +1,63 @@
+# Documentation: https://github.com/marketplace/actions/device-cloud-action#all-available-options
+name: Android Tests (Device Cloud Dev)
+
+on:
+  workflow_dispatch:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Upload APK and run flows on Device Cloud Dev
+        uses: devicecloud-dev/device-cloud-for-maestro@v1
+        with:
+          # Required
+          api-key: ${{ secrets.DCD_API_KEY }}
+          
+          # App Configuration
+          app-file: apps/android/wikipedia/wikipedia.apk  # or app-binary-id: <id>
+          # additional-app-files: |
+          #   second-app.apk
+          #   third-app.apk
+          # additional-app-binary-ids: |
+          #   binary-id-1
+          #   binary-id-2
+    
+          # Device Configuration
+          android-device: pixel-6  # pixel-6|pixel-6-pro|pixel-7|pixel-7-pro|generic-tablet
+          android-api-level: 34   # 29-35
+          # ios-device: iphone-14   # iphone-13 through iphone-16-pro-max, ipad-pro-6th-gen
+          # ios-version: 17        # 16|17|18
+          device-locale: en_US   # ISO-639-1_ISO-3166-1
+          orientation: 0         # 0|90|180|270 (Android only)
+          google-play: false     # Use Google Play devices (Android)
+          x86-arch: false       # Use x86 architecture (iOS)
+          skip-chrome-onboarding: true  # Skip Chrome onboarding screens (Android)
+    
+          # Flow Configuration
+          flows: .maestro       # or workspace: myFlows/ (flows takes precedence)
+          # exclude-flows: |
+          #   tests/experimental
+          include-tags: smokeTest
+          exclude-tags: util,recordTemplate
+    
+          # Test Configuration
+          # maestro-version: 1.39.5
+          env: |
+            appId=org.wikipedia
+          # name: Custom Run Name
+          retry: 1
+          report: html         # junit|html
+    
+          # Execution Options
+          async: false
+          quiet: false
+          ignore-sha-check: false
+          download-artifacts: ALL  # ALL|FAILED
+          json-file: true            # Write test results to a JSON file
+          api-url: https://api.devicecloud.dev
+          config: .maestro/config.yaml
+          runner-type: default   # Experimental: m1|m4
