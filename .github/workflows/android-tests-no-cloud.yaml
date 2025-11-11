@@ -46,7 +46,7 @@ jobs:
           ram-size: 4096M
           script: |
             npm run android:install:wikipedia
-            maestro test --config .maestro/config.yaml -e appId=org.wikipedia --format html --output test-results/wikipedia.html
+            maestro test .maestro --config .maestro/config.yaml -e appId=org.wikipedia --format html --output test-results/wikipedia.html
 
       - name: Upload test report
         if: always()
