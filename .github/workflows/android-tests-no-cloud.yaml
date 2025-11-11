@@ -43,10 +43,10 @@ jobs:
             -camera-back none
             -camera-front none
             -no-snapshot-save
-          ram-size: 2048M
+          ram-size: 4096M
           script: |
             npm run android:install:wikipedia
-            maestro test .maestro/flows --config .maestro/config.yaml -e appId=org.wikipedia --format html --output test-results/wikipedia.html
+            maestro test --config .maestro/config.yaml -e appId=org.wikipedia --format html --output test-results/wikipedia.html
 
       - name: Upload test report
         if: always()
