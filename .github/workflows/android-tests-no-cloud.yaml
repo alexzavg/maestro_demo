@@ -20,6 +20,12 @@ jobs:
           distribution: 'temurin'
           java-version: '21'
 
+      - name: Install Maestro CLI
+        run: |
+          curl -Ls "https://get.maestro.mobile.dev" | bash
+          echo "$HOME/.maestro/bin" >> $GITHUB_PATH
+          maestro --version
+
       # adb device offline issue https://github.com/ReactiveCircus/android-emulator-runner/issues/266#issuecomment-3508427461
       - name: Start emulator and run Maestro tests
         uses: reactivecircus/android-emulator-runner@v2
