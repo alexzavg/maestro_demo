@@ -27,7 +27,6 @@ jobs:
           export PATH="$PATH:$HOME/.maestro/bin"
           maestro --version
 
-      # adb device offline issue https://github.com/ReactiveCircus/android-emulator-runner/issues/266#issuecomment-3508427461
       - name: Start emulator and run Maestro tests
         uses: reactivecircus/android-emulator-runner@v2
         with:
@@ -45,8 +44,35 @@ jobs:
             -no-snapshot-save
           ram-size: 4096M
           script: |
+            set -e
+            # Install app
             npm run android:install:wikipedia
-            maestro test .maestro --config .maestro/config.yaml -e appId=org.wikipedia --format html --output test-results/wikipedia.html
+
+            # Per-flow recordings with matching names (no initial suite run)
+            mkdir -p test-results
+            flows=$(printf "%s\n" \
+              .maestro/flows/wikipedia/main/*.spec.yaml \
+              .maestro/flows/wikipedia/conditional/*.spec.yaml)
+
+            rec_status=0
+            for flow in $flows; do
+              [ -f "$flow" ] || continue
+              base="$(basename "$flow")"
+              name="${base%.spec.yaml}"
+
+              remote="/sdcard/${name}.mp4"
+              adb shell rm -f "$remote" || true
+              adb shell screenrecord --time-limit 900 "$remote" >/dev/null 2>&1 &
+
+              mkdir -p "test-results/${name}"
+              maestro test "$flow" --config .maestro/config.yaml --debug-output "test-results/${name}" -e appId=org.wikipedia --format html --output "test-results/${name}/index.html" || rec_status=1
+
+              adb shell pkill -INT screenrecord || adb shell killall -2 screenrecord || true
+              sleep 2 || true
+              adb pull "$remote" "test-results/${name}/recording.mp4" || true
+            done
+
+            if [ "$rec_status" -ne 0 ]; then exit "$rec_status"; fi
 
       - name: Upload test report
         if: always()
