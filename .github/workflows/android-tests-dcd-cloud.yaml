@@ -12,6 +12,7 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Upload APK and run flows on Device Cloud Dev
+        id: devicecloud
         uses: devicecloud-dev/device-cloud-for-maestro@v1
         with:
           # Required
