@@ -8,7 +8,7 @@
     "env:setup": "npm run maestro:device:start:android && npm run android:install:wikipedia",
     "env:teardown": "npm run android:uninstall:wikipedia && npm run maestro:device:stop",
     "maestro:inspect": "maestro studio",
-    "maestro:test:wikipedia": "maestro test .maestro/flows --config .maestro/config.yaml -e appId=org.wikipedia --format html --output test-results/wikipedia.html",
+    "maestro:test:wikipedia": "maestro test .maestro --config .maestro/config.yaml -e appId=org.wikipedia --format html --output test-results/wikipedia.html",
     "kill:ports": ".scripts/kill_ports.sh",
     "kill:processes": ".scripts/kill_processes.sh",
     "kill:emulators": "adb devices | grep emulator | cut -f1 | while read d; do adb -s \"$d\" emu kill; done",
