@@ -11,7 +11,7 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Upload APK and run flows on Device Cloud Dev
+      - name: Upload APK and run flows on Device Cloud Dev # Results link example: https://console.devicecloud.dev/results
         id: devicecloud
         uses: devicecloud-dev/device-cloud-for-maestro@v1
         with:
@@ -63,7 +63,7 @@ jobs:
           config: .maestro/config.yaml
           runner-type: default   # Experimental: m1|m4
 
-      - name: Post Test Results to Slack
+      - name: Post Test Results to Slack # You'll need to create a Slack App with OAuth permissions "chat:write", "chat:write.public" and "chat:write.customize" for this step
         if: always()
         uses: slackapi/slack-github-action@v1.24.0
         with:
@@ -72,4 +72,4 @@ jobs:
             Test Run Status: ${{ steps.devicecloud.outputs.DEVICE_CLOUD_UPLOAD_STATUS }}
             View Results: ${{ steps.devicecloud.outputs.DEVICE_CLOUD_CONSOLE_URL }}
         env:
-          SLACK_BOT_TOKEN: ${{ secrets.SLACK_BOT_TOKEN }}
+          SLACK_BOT_TOKEN: ${{ secrets.SLACK_BOT_TOKEN }} # Slack App OAuth token which starts with "xoxb-"
