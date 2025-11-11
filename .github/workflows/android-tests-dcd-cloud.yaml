@@ -64,7 +64,7 @@ jobs:
           runner-type: default   # Experimental: m1|m4
 
       - name: Post Test Results
-        if: always()  # Run even if tests fail
+        if: always()
         uses: slackapi/slack-github-action@v1.24.0
         with:
           channel-id: ${{ secrets.SLACK_CHANNEL_ID }}
