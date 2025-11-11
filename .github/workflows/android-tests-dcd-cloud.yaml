@@ -63,7 +63,7 @@ jobs:
           config: .maestro/config.yaml
           runner-type: default   # Experimental: m1|m4
 
-      - name: Post Test Results
+      - name: Post Test Results to Slack
         if: always()
         uses: slackapi/slack-github-action@v1.24.0
         with:
