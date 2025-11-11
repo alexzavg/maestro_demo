@@ -24,6 +24,7 @@ jobs:
         run: |
           curl -Ls "https://get.maestro.mobile.dev" | bash
           echo "$HOME/.maestro/bin" >> $GITHUB_PATH
+          export PATH="$PATH:$HOME/.maestro/bin"
           maestro --version
 
       # adb device offline issue https://github.com/ReactiveCircus/android-emulator-runner/issues/266#issuecomment-3508427461
