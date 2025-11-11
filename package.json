@@ -12,7 +12,7 @@
     "kill:ports": ".scripts/kill_ports.sh",
     "kill:processes": ".scripts/kill_processes.sh",
     "kill:emulators": "adb devices | grep emulator | cut -f1 | while read d; do adb -s \"$d\" emu kill; done",
-    "maestro:device:start:android": "maestro start-device --platform android --os-version 34 --device-locale en_US",
+    "maestro:device:start:android": "$HOME/.maestro/bin/maestro start-device --platform android --os-version 34 --device-locale en_US",
     "maestro:device:stop": "adb emu kill",
     "android:install:wikipedia": "adb install -t -r -g ./apps/android/wikipedia/wikipedia.apk",
     "android:uninstall:wikipedia": "adb uninstall org.wikipedia || true",
