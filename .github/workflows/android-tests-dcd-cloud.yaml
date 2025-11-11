@@ -61,3 +61,14 @@ jobs:
           api-url: https://api.devicecloud.dev
           config: .maestro/config.yaml
           runner-type: default   # Experimental: m1|m4
+
+      - name: Post Test Results
+        if: always()  # Run even if tests fail
+        uses: slackapi/slack-github-action@v1.24.0
+        with:
+          channel-id: ${{ secrets.SLACK_CHANNEL_ID }}
+          slack-message: |
+            Test Run Status: ${{ steps.devicecloud.outputs.DEVICE_CLOUD_UPLOAD_STATUS }}
+            View Results: ${{ steps.devicecloud.outputs.DEVICE_CLOUD_CONSOLE_URL }}
+        env:
+          SLACK_BOT_TOKEN: ${{ secrets.SLACK_BOT_TOKEN }}
