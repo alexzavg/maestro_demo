@@ -18,3 +18,4 @@ node_modules/
 .vscode/
 
 apps/ios
+.scripts/ios/ios_test_runner.sh
