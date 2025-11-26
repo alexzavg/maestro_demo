@@ -1,4 +1,4 @@
-name: Android Tests (No Cloud Report)
+name: Android Tests (No Cloud + Report)
 
 on:
   workflow_dispatch:
@@ -93,17 +93,12 @@ jobs:
           publish_branch: gh-pages
           publish_dir: gh-pages
 
-      - name: Print GitHub Pages URL
+      - name: Print report URL
         if: always()
         run: |
-          GHPAGES_BASE_URL="https://${{ github.repository_owner }}.github.io/${{ github.event.repository.name }}/"
-          REPORT_URL="${GHPAGES_BASE_URL}test-results/test-report.html"
-          echo "GitHub Pages base: $GHPAGES_BASE_URL"
+          REPORT_URL="https://${{ github.repository_owner }}.github.io/${{ github.event.repository.name }}/test-results/test-report.html"
           echo "Report URL: $REPORT_URL"
-          {
-            echo "GHPAGES_URL=$GHPAGES_BASE_URL"
-            echo "REPORT_URL=$REPORT_URL"
-          } >> $GITHUB_ENV
+          echo "REPORT_URL=$REPORT_URL" >> $GITHUB_ENV
 
       - name: Fail if recordings failed
         if: steps.record_flows.outcome == 'failure'
@@ -120,20 +115,36 @@ jobs:
           REPO: ${{ github.repository }}
           WORKFLOW: ${{ github.workflow }}
           BRANCH: ${{ github.ref_name }}
-          PAGES_URL: ${{ env.GHPAGES_URL }}
           REPORT_URL: ${{ env.REPORT_URL }}
         run: |
           if [ -z "$WEBHOOK_URL" ]; then
             echo "SLACK_WEBHOOK_URL secret is not set; skipping Slack notification."
             exit 0
           fi
+
+          # Map job status to a friendly emoji
+          case "$STATUS" in
+            success)
+              STATUS_ICON="✅" ;;
+            failure)
+              STATUS_ICON="❌" ;;
+            cancelled)
+              STATUS_ICON="⚪️" ;;
+            *)
+              STATUS_ICON="ℹ️" ;;
+          esac
+
           payload=$(jq -nc \
             --arg repo "$REPO" \
             --arg workflow "$WORKFLOW" \
             --arg branch "$BRANCH" \
             --arg status "$STATUS" \
+            --arg icon "$STATUS_ICON" \
             --arg url "$RUN_URL" \
-            --arg pages "${PAGES_URL:-N/A}" \
             --arg report "${REPORT_URL:-N/A}" \
-            '{text: ("*Status:* " + $status + "\n*Workflow:* " + $workflow + "\n*Repository:* " + $repo + " (" + $branch + ")\n*Run:* <" + $url + "|View on GitHub>\n*Pages Root:* <" + $pages + "|" + $pages + ">\n*Report:* <" + $report + "|" + $report + ">")}')
+            '{text: ($icon + "  *Android Tests (No Cloud Report)*" + "\n" +
+                     "*Status:* " + $status + "\n" +
+                     "*Repo:* " + $repo + " (" + $branch + ")\n" +
+                     "*Run:* <" + $url + "|View on GitHub>\n" +
+                     "*Report:* <" + $report + "|Open HTML report>")}' )
           curl -X POST -H 'Content-type: application/json' --data "$payload" "$WEBHOOK_URL"
