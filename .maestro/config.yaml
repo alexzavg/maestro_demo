@@ -6,6 +6,6 @@ excludeTags:
   - util
   - recordTemplate
 
-timeout: 60000
+timeout: 10000
 
 testOutputDir: test-results

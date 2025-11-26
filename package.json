@@ -16,16 +16,20 @@
     "maestro:device:stop": "adb emu kill",
     "android:install:wikipedia": "adb install -t -r -g ./apps/android/wikipedia/wikipedia.apk",
     "android:uninstall:wikipedia": "adb uninstall org.wikipedia || true",
-    "report:delete": "rm -rf test-results/*",
-    "report:open": "open test-results/wikipedia.html",
     "report:ai:open": "open test-results/*/ai-report-*.spec.html",
-    "recordings:delete": "rm -rf recordings/*",
     "maestro:record:wikipedia": "$HOME/.maestro/bin/maestro record --local .maestro/flows/wikipedia/conditional/LaunchStepper.spec.yaml recordings/LaunchStepper.mp4 --config .maestro/config.yaml -e appId=org.wikipedia",
     "maestro:chat": "maestro chat",
-    "test:ios": "chmod +x .scripts/ios/ios_test_runner.sh && .scripts/ios/ios_test_runner.sh"
+    "test:ios": "chmod +x .scripts/ios/ios_test_runner.sh && .scripts/ios/ios_test_runner.sh",
+    "recordings:delete": "rm -rf recordings/*",
+    "record:all": "npm run recordings:delete && node .scripts/record-flows.js",
+    "report:delete": "rm -rf test-results/*",
+    "report:generate": "npm run report:delete && node .scripts/generate-report.js",
+    "report:serve": "npm run report:delete && node .scripts/serve-report.js",
+    "report:archive": "node .scripts/archive-report.js"
   },
   "devDependencies": {
     "@devicecloud.dev/dcd": "^4.1.4",
-    "maestro": "latest"
+    "maestro": "latest",
+    "open": "^11.0.0"
   }
 }
