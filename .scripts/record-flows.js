@@ -46,34 +46,7 @@ async function recordFlow(flowPath) {
       fs.mkdirSync(RECORDINGS_DIR, { recursive: true });
     }
 
-    console.log(`\n🔵 Starting test for: ${flowPath}`);
-    
-    // First, run the test to get the result
-    let testPassed = false;
-    let output = '';
-    
-    try {
-      // Run the test without recording first
-      const testCmd = [
-        MAESTRO_BIN,
-        'test',
-        `"${flowPath}"`,
-        `--config "${CONFIG_PATH}"`,
-        '-e appId=org.wikipedia'
-      ].join(' ');
-      
-      console.log('   Running test...');
-      output = execSync(testCmd, { stdio: 'pipe' }).toString();
-      testPassed = true;
-      console.log('   ✅ Test passed');
-    } catch (error) {
-      // If the test fails, we'll still try to record it
-      output = error.stdout?.toString() || error.stderr?.toString() || error.message;
-      testPassed = false;
-      console.log('   ❌ Test failed');
-    }
-
-    // Now record the flow
+    // Record the flow directly - pass/fail status determined from recording exit code
     const tempOutputFile = path.join(RECORDINGS_DIR, `${flowName}-recording-temp.mp4`);
     if (fs.existsSync(tempOutputFile)) {
       fs.unlinkSync(tempOutputFile);
@@ -94,22 +67,18 @@ async function recordFlow(flowPath) {
     
     try {
       execSync(recordCmd, { stdio: 'inherit' });
-      const finalPassed = testPassed;
-      const finalStatus = finalPassed ? 'passed' : 'failed';
-      const finalOutputFile = path.join(RECORDINGS_DIR, `${flowName}-${finalStatus}.mp4`);
+      const finalOutputFile = path.join(RECORDINGS_DIR, `${flowName}-passed.mp4`);
       if (fs.existsSync(tempOutputFile)) {
         if (fs.existsSync(finalOutputFile)) {
           fs.unlinkSync(finalOutputFile);
         }
         fs.renameSync(tempOutputFile, finalOutputFile);
       }
-      console.log(`✅ Successfully recorded: ${flowName} (${finalStatus})`);
+      console.log(`✅ Successfully recorded: ${flowName} (passed)`);
       console.log(`   Output: ${finalOutputFile}`);
-      return { success: true, passed: finalPassed };
+      return { success: true, passed: true };
     } catch (recordError) {
-      console.error(`❌ Recording failed for ${flowName}:`, recordError.message);
-
-      // If Maestro produced a temp video, still surface it as a failed recording
+      // Test failed during recording - save as failed recording
       const failedOutputFile = path.join(RECORDINGS_DIR, `${flowName}-failed.mp4`);
       if (fs.existsSync(tempOutputFile)) {
         try {
@@ -117,13 +86,16 @@ async function recordFlow(flowPath) {
             fs.unlinkSync(failedOutputFile);
           }
           fs.renameSync(tempOutputFile, failedOutputFile);
-          console.log(`   Saved failed recording as: ${failedOutputFile}`);
+          console.log(`❌ Test failed: ${flowName}`);
+          console.log(`   Saved recording as: ${failedOutputFile}`);
+          return { success: true, passed: false };
         } catch (renameError) {
           console.error('   Warning: could not rename temp recording file:', renameError.message);
         }
       }
 
-      return { success: false, passed: testPassed, error: recordError.message };
+      console.error(`❌ Recording failed for ${flowName}:`, recordError.message);
+      return { success: false, passed: false, error: recordError.message };
     }
   } catch (error) {
     console.error(`❌ Error processing ${flowPath}:`, error.message);
