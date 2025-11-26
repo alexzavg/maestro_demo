@@ -108,6 +108,21 @@ async function recordFlow(flowPath) {
       return { success: true, passed: finalPassed };
     } catch (recordError) {
       console.error(`❌ Recording failed for ${flowName}:`, recordError.message);
+
+      // If Maestro produced a temp video, still surface it as a failed recording
+      const failedOutputFile = path.join(RECORDINGS_DIR, `${flowName}-failed.mp4`);
+      if (fs.existsSync(tempOutputFile)) {
+        try {
+          if (fs.existsSync(failedOutputFile)) {
+            fs.unlinkSync(failedOutputFile);
+          }
+          fs.renameSync(tempOutputFile, failedOutputFile);
+          console.log(`   Saved failed recording as: ${failedOutputFile}`);
+        } catch (renameError) {
+          console.error('   Warning: could not rename temp recording file:', renameError.message);
+        }
+      }
+
       return { success: false, passed: testPassed, error: recordError.message };
     }
   } catch (error) {
