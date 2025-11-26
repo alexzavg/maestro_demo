@@ -115,6 +115,7 @@ jobs:
           REPO: ${{ github.repository }}
           WORKFLOW: ${{ github.workflow }}
           BRANCH: ${{ github.ref_name }}
+          COMMIT_SHA: ${{ github.sha }}
           REPORT_URL: ${{ env.REPORT_URL }}
         run: |
           if [ -z "$WEBHOOK_URL" ]; then
@@ -134,17 +135,26 @@ jobs:
               STATUS_ICON="ℹ️" ;;
           esac
 
+          # Build URLs
+          BRANCH_URL="https://github.com/${REPO}/tree/${BRANCH}"
+          COMMIT_URL="https://github.com/${REPO}/commit/${COMMIT_SHA}"
+          SHORT_SHA="${COMMIT_SHA:0:7}"
+
           payload=$(jq -nc \
             --arg repo "$REPO" \
             --arg workflow "$WORKFLOW" \
             --arg branch "$BRANCH" \
+            --arg branch_url "$BRANCH_URL" \
+            --arg commit_url "$COMMIT_URL" \
+            --arg short_sha "$SHORT_SHA" \
             --arg status "$STATUS" \
             --arg icon "$STATUS_ICON" \
             --arg url "$RUN_URL" \
             --arg report "${REPORT_URL:-N/A}" \
             '{text: ($icon + "  *Android Tests (No Cloud Report)*" + "\n" +
                      "*Status:* " + $status + "\n" +
-                     "*Repo:* " + $repo + " (" + $branch + ")\n" +
+                     "*Repo:* <" + $branch_url + "|" + $repo + " (" + $branch + ")>\n" +
+                     "*Commit:* <" + $commit_url + "|" + $short_sha + ">\n" +
                      "*Run:* <" + $url + "|View on GitHub>\n" +
                      "*Report:* <" + $report + "|Open HTML report>")}' )
           curl -X POST -H 'Content-type: application/json' --data "$payload" "$WEBHOOK_URL"
