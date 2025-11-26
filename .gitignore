@@ -2,6 +2,7 @@
 .maestro/outputs/
 test-results
 recordings
+test-report
 
 # Node
 node_modules/
