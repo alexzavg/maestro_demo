@@ -21,8 +21,9 @@
     "maestro:chat": "maestro chat",
     "test:ios": "chmod +x .scripts/ios/ios_test_runner.sh && .scripts/ios/ios_test_runner.sh",
     "recordings:delete": "rm -rf recordings/*",
-    "record:all": "npm run recordings:delete && node .scripts/record-flows.js",
     "report:delete": "rm -rf test-results/*",
+    "artifacts:delete": "npm run recordings:delete && npm run report:delete && rm -rf test-report/*",
+    "record:all": "npm run recordings:delete && node .scripts/record-flows.js",
     "report:generate": "npm run report:delete && node .scripts/generate-report.js",
     "report:serve": "npm run report:delete && node .scripts/serve-report.js",
     "report:archive": "node .scripts/archive-report.js"
