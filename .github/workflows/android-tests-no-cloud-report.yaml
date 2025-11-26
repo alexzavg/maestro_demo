@@ -1,0 +1,123 @@
+name: Android Tests (No Cloud)
+
+on:
+  workflow_dispatch:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+      - name: Enable KVM
+        run: |
+          echo 'KERNEL=="kvm", GROUP="kvm", MODE="0666", OPTIONS+="static_node=kvm"' | sudo tee /etc/udev/rules.d/99-kvm4all.rules
+          sudo udevadm control --reload-rules
+          sudo udevadm trigger --name-match=kvm
+
+      - uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '21'
+
+      - name: Install Maestro CLI
+        run: |
+          curl -Ls "https://get.maestro.mobile.dev" | bash
+          echo "$HOME/.maestro/bin" >> $GITHUB_PATH
+          export PATH="$PATH:$HOME/.maestro/bin"
+          maestro --version
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Start emulator and run recordings
+        id: record_flows
+        continue-on-error: true
+        uses: reactivecircus/android-emulator-runner@v2
+        with:
+          api-level: 34
+          arch: x86_64
+          target: google_apis
+          disable-animations: true
+          force-avd-creation: true
+          emulator-options: >
+            -no-window
+            -gpu swiftshader_indirect
+            -no-boot-anim
+            -camera-back none
+            -camera-front none
+            -no-snapshot-save
+          ram-size: 4096M
+          script: |
+            set -euo pipefail
+            npm run android:install:wikipedia
+            npm run record:all
+
+      - name: Generate HTML report
+        id: generate_report
+        if: always()
+        run: npm run report:generate
+
+      - name: Create report archive
+        id: archive_report
+        if: steps.generate_report.outcome == 'success'
+        run: npm run report:archive
+
+      - name: Upload test report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: maestro-wikipedia-report
+          path: test-results
+
+      - name: Prepare GitHub Pages content
+        if: always()
+        run: |
+          rm -rf gh-pages
+          mkdir -p gh-pages
+          if [ -d test-results ]; then
+            cp -R test-results gh-pages/test-results
+          fi
+          if [ -d recordings ]; then
+            cp -R recordings gh-pages/recordings
+          fi
+          if [ -d test-report ]; then
+            cp -R test-report gh-pages/test-report
+          fi
+
+      - name: Publish recordings and report to gh-pages
+        if: always()
+        uses: peaceiris/actions-gh-pages@v4
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_branch: gh-pages
+          publish_dir: gh-pages
+
+      - name: Fail if recordings failed
+        if: steps.record_flows.outcome == 'failure'
+        run: |
+          echo "record:all reported failures"
+          exit 1
+
+      - name: Notify Slack
+        if: always()
+        env:
+          WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+          RUN_URL: https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}
+          STATUS: ${{ job.status }}
+          REPO: ${{ github.repository }}
+          WORKFLOW: ${{ github.workflow }}
+          BRANCH: ${{ github.ref_name }}
+        run: |
+          if [ -z "$WEBHOOK_URL" ]; then
+            echo "SLACK_WEBHOOK_URL secret is not set; skipping Slack notification."
+            exit 0
+          fi
+          payload=$(jq -nc \
+            --arg repo "$REPO" \
+            --arg workflow "$WORKFLOW" \
+            --arg branch "$BRANCH" \
+            --arg status "$STATUS" \
+            --arg url "$RUN_URL" \
+            '{text: ("[" + $status + "] " + $workflow + " | " + $repo + " (" + $branch + ")\n" + $url)}')
+          curl -X POST -H 'Content-type: application/json' --data "$payload" "$WEBHOOK_URL"
