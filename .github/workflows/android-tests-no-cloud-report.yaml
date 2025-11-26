@@ -1,4 +1,4 @@
-name: Android Tests (No Cloud)
+name: Android Tests (No Cloud Report)
 
 on:
   workflow_dispatch:
