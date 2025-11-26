@@ -14,18 +14,4 @@ tags:
         id: ${output.launchStepper.skipBtn}
     commands:
         - assertVisible:
-            id: ${output.launchStepper.onboardingImg}
-        - assertVisible:
-            text: ${output.launchStepper.onboardingText}
-        - assertVisible:
-            text: ${output.launchStepper.onboardingText2}
-        - assertVisible:
-            text: ${output.launchStepper.onboardingText3}
-        - assertVisible:
-            text: ${output.launchStepper.languageText}
-        - assertVisible:
-            text: ${output.launchStepper.addEditLanguagesText}
-        - assertVisible:
-            id: ${output.launchStepper.viewOnboardingIndicator}
-        - assertVisible:
             id: "invalid_id"

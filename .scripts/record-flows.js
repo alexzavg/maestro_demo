@@ -127,35 +127,41 @@ async function main() {
     console.log(`   ${index + 1}. ${flow}`);
   });
 
-  let successCount = 0;
-  let passedCount = 0;
+  let recordedCount = 0;
+  let testPassedCount = 0;
+  let testFailedCount = 0;
   
   for (const flow of flowsToRecord) {
     const result = await recordFlow(flow);
-    if (result && result.success) {
-      successCount++;
-      if (result.passed) passedCount++;
+    if (!result) {
+      continue;
+    }
+
+    if (result.passed) {
+      testPassedCount++;
+    } else {
+      testFailedCount++;
+    }
+
+    if (result.success) {
+      recordedCount++;
     }
     
     // Small delay between recordings
     await new Promise(resolve => setTimeout(resolve, 3000));
   }
 
-  const failedCount = successCount - passedCount;
-  
   console.log(`\n✨ Recording completed!`);
-  console.log(`   ✅ Successfully recorded: ${successCount} flow(s)`);
-  console.log(`     ✓ Passed: ${passedCount}`);
-  console.log(`     ✗ Failed: ${failedCount}`);
-  console.log(`   ❌ Failed to record: ${flowsToRecord.length - successCount} flow(s)`);
+  console.log(`     ✅ Passed: ${testPassedCount}`);
+  console.log(`     ❌ Failed: ${testFailedCount}`);
   console.log(`\nRecordings saved to: ${RECORDINGS_DIR}`);
   
   // Return the results for potential use by other scripts
   return {
     total: flowsToRecord.length,
-    recorded: successCount,
-    passed: passedCount,
-    failed: failedCount,
+    recorded: recordedCount,
+    passed: testPassedCount,
+    failed: testFailedCount,
     recordingsDir: RECORDINGS_DIR
   };
 }
