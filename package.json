@@ -24,7 +24,8 @@
     "record:all": "npm run recordings:delete && node .scripts/record-flows.js",
     "report:delete": "rm -rf test-results/*",
     "report:generate": "npm run report:delete && node .scripts/generate-report.js",
-    "report:serve": "npm run report:delete && node .scripts/serve-report.js"
+    "report:serve": "npm run report:delete && node .scripts/serve-report.js",
+    "report:archive": "node .scripts/archive-report.js"
   },
   "devDependencies": {
     "@devicecloud.dev/dcd": "^4.1.4",
