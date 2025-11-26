@@ -135,5 +135,5 @@ jobs:
             --arg url "$RUN_URL" \
             --arg pages "${PAGES_URL:-N/A}" \
             --arg report "${REPORT_URL:-N/A}" \
-            '{text: ("[" + $status + "] " + $workflow + " | " + $repo + " (" + $branch + ")\n" + $url + "\nPages root: " + $pages + "\nReport: " + $report)}')
+            '{text: ("*Status:* " + $status + "\n*Workflow:* " + $workflow + "\n*Repository:* " + $repo + " (" + $branch + ")\n*Run:* <" + $url + "|View on GitHub>\n*Pages Root:* <" + $pages + "|" + $pages + ">\n*Report:* <" + $report + "|" + $report + ">")}')
           curl -X POST -H 'Content-type: application/json' --data "$payload" "$WEBHOOK_URL"
