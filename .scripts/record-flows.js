@@ -155,15 +155,25 @@ async function main() {
   console.log(`     ✅ Passed: ${testPassedCount}`);
   console.log(`     ❌ Failed: ${testFailedCount}`);
   console.log(`\nRecordings saved to: ${RECORDINGS_DIR}`);
+
+  const hasTestFailures = testFailedCount > 0;
+  const hasRecordingFailures = recordedCount < flowsToRecord.length;
   
   // Return the results for potential use by other scripts
-  return {
+  const summary = {
     total: flowsToRecord.length,
     recorded: recordedCount,
     passed: testPassedCount,
     failed: testFailedCount,
     recordingsDir: RECORDINGS_DIR
   };
+
+  if (hasTestFailures || hasRecordingFailures) {
+    console.error('\n❌ Some flows failed. Setting non-zero exit code.');
+    process.exitCode = 1;
+  }
+
+  return summary;
 }
 
 // Run the script
