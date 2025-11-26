@@ -93,6 +93,13 @@ jobs:
           publish_branch: gh-pages
           publish_dir: gh-pages
 
+      - name: Print GitHub Pages URL
+        if: always()
+        run: |
+          GHPAGES_URL="https://${{ github.repository_owner }}.github.io/${{ github.event.repository.name }}/"
+          echo "GitHub Pages: $GHPAGES_URL"
+          echo "GHPAGES_URL=$GHPAGES_URL" >> $GITHUB_ENV
+
       - name: Fail if recordings failed
         if: steps.record_flows.outcome == 'failure'
         run: |
@@ -108,6 +115,7 @@ jobs:
           REPO: ${{ github.repository }}
           WORKFLOW: ${{ github.workflow }}
           BRANCH: ${{ github.ref_name }}
+          PAGES_URL: ${{ env.GHPAGES_URL }}
         run: |
           if [ -z "$WEBHOOK_URL" ]; then
             echo "SLACK_WEBHOOK_URL secret is not set; skipping Slack notification."
@@ -119,5 +127,6 @@ jobs:
             --arg branch "$BRANCH" \
             --arg status "$STATUS" \
             --arg url "$RUN_URL" \
-            '{text: ("[" + $status + "] " + $workflow + " | " + $repo + " (" + $branch + ")\n" + $url)}')
+            --arg pages "${PAGES_URL:-N/A}" \
+            '{text: ("[" + $status + "] " + $workflow + " | " + $repo + " (" + $branch + ")\n" + $url + "\nReport: " + $pages)}')
           curl -X POST -H 'Content-type: application/json' --data "$payload" "$WEBHOOK_URL"
