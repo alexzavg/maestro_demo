@@ -74,8 +74,10 @@ async function recordFlow(flowPath) {
     }
 
     // Now record the flow
-    const status = testPassed ? 'passed' : 'failed';
-    const outputFile = path.join(RECORDINGS_DIR, `${flowName}-${status}.mp4`);
+    const tempOutputFile = path.join(RECORDINGS_DIR, `${flowName}-recording-temp.mp4`);
+    if (fs.existsSync(tempOutputFile)) {
+      fs.unlinkSync(tempOutputFile);
+    }
     
     console.log(`\n🔵 Starting recording for: ${flowPath}`);
     const recordCmd = [
@@ -83,7 +85,7 @@ async function recordFlow(flowPath) {
       'record',
       '--local',
       `"${flowPath}"`,
-      `"${outputFile}"`,
+      `"${tempOutputFile}"`,
       `--config "${CONFIG_PATH}"`,
       '-e appId=org.wikipedia'
     ].join(' ');
@@ -92,9 +94,18 @@ async function recordFlow(flowPath) {
     
     try {
       execSync(recordCmd, { stdio: 'inherit' });
-      console.log(`✅ Successfully recorded: ${flowName} (${status})`);
-      console.log(`   Output: ${outputFile}`);
-      return { success: true, passed: testPassed };
+      const finalPassed = testPassed;
+      const finalStatus = finalPassed ? 'passed' : 'failed';
+      const finalOutputFile = path.join(RECORDINGS_DIR, `${flowName}-${finalStatus}.mp4`);
+      if (fs.existsSync(tempOutputFile)) {
+        if (fs.existsSync(finalOutputFile)) {
+          fs.unlinkSync(finalOutputFile);
+        }
+        fs.renameSync(tempOutputFile, finalOutputFile);
+      }
+      console.log(`✅ Successfully recorded: ${flowName} (${finalStatus})`);
+      console.log(`   Output: ${finalOutputFile}`);
+      return { success: true, passed: finalPassed };
     } catch (recordError) {
       console.error(`❌ Recording failed for ${flowName}:`, recordError.message);
       return { success: false, passed: testPassed, error: recordError.message };
