@@ -1,6 +1,5 @@
 const fs = require('fs');
 const path = require('path');
-const { execSync } = require('child_process');
 
 // Configuration
 const RECORDINGS_DIR = path.join(__dirname, '..', 'recordings');
