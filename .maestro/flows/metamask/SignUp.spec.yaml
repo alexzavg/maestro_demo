@@ -1,0 +1,19 @@
+appId: ${appId}
+tags:
+  - smokeTest
+---
+- launchApp:
+    clearState: true
+
+- runScript: 
+    file: "../../../src/pages/SignUp.page.js"
+
+- runFlow:
+    when:
+      visible:
+        id: ${output.signUp.skipBtn}
+    commands:
+        - assertVisible:
+            text: ${output.signUp.onboardingText}
+        - tapOn:
+            id: ${output.signUp.skipBtn}

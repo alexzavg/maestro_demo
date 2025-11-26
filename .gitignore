@@ -1,21 +1,14 @@
-# Maestro
 .maestro/outputs/
 test-results
 recordings
-
-# Node
 node_modules/
 *.log
-
-# Binaries
 #*.apk
-*.aab
+#*.aab
 *.ipa
-
-# OS/IDE
+*.zip
 .DS_Store
 .idea/
 .vscode/
-
 apps/ios
 .scripts/ios/ios_test_runner.sh

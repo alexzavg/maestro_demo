@@ -1,10 +1,9 @@
 flows:
-  - flows/wikipedia/main/*.spec.yaml
-  - flows/wikipedia/conditional/*.spec.yaml
+  - flows/metamask/*.spec.yaml
 
-excludeTags:
-  - util
-  - recordTemplate
+# excludeTags:
+#   - util
+#   - recordTemplate
 
 timeout: 60000
 
