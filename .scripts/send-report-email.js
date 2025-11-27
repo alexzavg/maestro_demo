@@ -42,7 +42,7 @@ for (const recipient of RECIPIENTS) {
     await transporter.sendMail({
       from: process.env.EMAIL_USER,
       to: recipient,
-      subject: `Your Test Report Is Ready ${timestamp}`,
+      subject: `Your Maestro Test Report Is Ready ${timestamp}`,
       text: 'Please find the test report archive attached.',
       attachments: [{ path: archivePath }]
     });
