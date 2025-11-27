@@ -26,7 +26,9 @@
     "record:all": "npm run recordings:delete && node .scripts/record-flows.js",
     "report:generate": "npm run report:delete && node .scripts/generate-report.js",
     "report:serve": "npm run report:delete && node .scripts/serve-report.js",
-    "report:archive": "node .scripts/archive-report.js"
+    "report:archive": "node .scripts/archive-report.js",
+    "capture:android:logs": "rm -rf android_emulator_logs.txt && adb logcat -c && adb logcat -v time > android_emulator_logs.txt",
+    "capture:android:logs:stop": "pkill -f 'adb logcat' || true && adb logcat -c"
   },
   "devDependencies": {
     "@devicecloud.dev/dcd": "^4.1.4",
