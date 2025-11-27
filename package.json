@@ -23,7 +23,9 @@
     "recordings:delete": "rm -rf recordings/*",
     "maestro:record:wikipedia": "$HOME/.maestro/bin/maestro record --local .maestro/flows/wikipedia/conditional/LaunchStepper.spec.yaml recordings/LaunchStepper.mp4 --config .maestro/config.yaml -e appId=org.wikipedia",
     "maestro:chat": "maestro chat",
-    "test:ios": "chmod +x .scripts/ios/ios_test_runner.sh && .scripts/ios/ios_test_runner.sh"
+    "test:ios": "chmod +x .scripts/ios/ios_test_runner.sh && .scripts/ios/ios_test_runner.sh",
+    "capture:android:logs": "rm -rf android_emulator_logs.txt && adb logcat -c && adb logcat -v time > android_emulator_logs.txt",
+    "capture:android:logs:stop": "pkill -f 'adb logcat' || true && adb logcat -c"
   },
   "devDependencies": {
     "@devicecloud.dev/dcd": "^4.1.4",
