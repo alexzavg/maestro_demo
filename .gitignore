@@ -21,3 +21,4 @@ node_modules/
 apps/ios
 .scripts/ios/ios_test_runner.sh
 android_emulator_logs.txt
+.env
