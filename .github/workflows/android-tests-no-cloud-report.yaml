@@ -27,6 +27,13 @@ jobs:
           export PATH="$PATH:$HOME/.maestro/bin"
           maestro --version
 
+      - name: Create .env file from secrets
+        run: |
+          echo "EMAIL_USER=${{ secrets.EMAIL_USER }}" >> .env
+          echo "EMAIL_PASS=${{ secrets.EMAIL_PASS }}" >> .env
+          echo "MANAGER_EMAIL=${{ secrets.MANAGER_EMAIL }}" >> .env
+          echo "LEAD_EMAIL=${{ secrets.LEAD_EMAIL }}" >> .env
+
       - name: Install dependencies
         run: npm ci
 
@@ -61,7 +68,12 @@ jobs:
       - name: Create report archive
         id: archive_report
         if: steps.generate_report.outcome == 'success'
-        run: npm run report:archive
+        run: node .scripts/archive-report.js
+
+      - name: Send report emails
+        id: send_emails
+        if: steps.archive_report.outcome == 'success'
+        run: node .scripts/send-report-email.js
 
       - name: Upload test report
         if: always()

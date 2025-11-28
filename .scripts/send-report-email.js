@@ -25,8 +25,8 @@ if (!files.length) {
 const archivePath = path.join(REPORT_DIR, files[0]);
 
 const RECIPIENTS = [
-  'me41zavgorodnii+1@gmail.com',
-  'oleksandrzavhorodnii@coherentsolutions.com',
+  process.env.MANAGER_EMAIL,
+  process.env.LEAD_EMAIL,
 ];
 
 const transporter = nodemailer.createTransport({
