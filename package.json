@@ -29,6 +29,7 @@
     "report:serve": "npm run report:delete && node .scripts/serve-report.js",
     "report:archive": "node .scripts/archive-report.js",
     "report:email": "node .scripts/send-report-email.js",
+    "send:report:emails": "npm run report:archive && npm run report:email",
     "capture:android:logs": "rm -rf android_emulator_logs.txt && adb logcat -c && adb logcat -v time > android_emulator_logs.txt",
     "capture:android:logs:stop": "pkill -f 'adb logcat' || true && adb logcat -c",
     "ollama:serve": "ollama serve",
