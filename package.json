@@ -30,7 +30,10 @@
     "report:archive": "node .scripts/archive-report.js",
     "report:email": "node .scripts/send-report-email.js",
     "capture:android:logs": "rm -rf android_emulator_logs.txt && adb logcat -c && adb logcat -v time > android_emulator_logs.txt",
-    "capture:android:logs:stop": "pkill -f 'adb logcat' || true && adb logcat -c"
+    "capture:android:logs:stop": "pkill -f 'adb logcat' || true && adb logcat -c",
+    "ollama:serve": "ollama serve",
+    "ollama:run": "ollama run dolphin-mistral",
+    "ollama:kill": "pkill -f ollama || true"
   },
   "devDependencies": {
     "@devicecloud.dev/dcd": "^4.1.4",
