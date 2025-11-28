@@ -1,5 +1,9 @@
-const fs = require('fs');
-const path = require('path');
+import fs from 'fs';
+import path from 'path';
+import { fileURLToPath } from 'url';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 // Configuration
 const RECORDINGS_DIR = path.join(__dirname, '..', 'recordings');
@@ -258,21 +262,7 @@ async function main() {
 }
 
 // Run the script
-const reportPath = main();
+main();
 
 // Export for testing
-module.exports = { getRecordings, generateHTMLReport, main };
-
-// If this script is run directly (not required), open the report
-if (require.main === module) {
-  // Use dynamic import for ESM compatibility
-  (async () => {
-    try {
-      const open = (await import('open')).default;
-      await open(reportPath);
-    } catch (error) {
-      console.log(`Report generated at: ${reportPath}`);
-      console.log('Run \`npm run report:serve\` to view it in the browser');
-    }
-  })();
-}
+export { getRecordings, generateHTMLReport, main };

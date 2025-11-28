@@ -1,8 +1,13 @@
-const http = require('http');
-const path = require('path');
-const fs = require('fs').promises;
-const { execSync } = require('child_process');
-const { main } = require('./generate-report');
+import http from 'http';
+import path from 'path';
+import { promises as fs } from 'fs';
+import { execSync } from 'child_process';
+import os from 'os';
+import { fileURLToPath } from 'url';
+import { main } from './generate-report.js';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 // Function to kill processes on a specific port
 function killPort(port) {
@@ -133,7 +138,7 @@ async function startServer() {
     server.listen(PORT, '0.0.0.0', () => {
       console.log(`\n📊 Test report server running at:`);
       console.log(`   Local:   http://localhost:${PORT}/`);
-      console.log(`   Network: http://${require('os').networkInterfaces().en0?.find(i => i.family === 'IPv4')?.address || 'localhost'}:${PORT}/`);
+      console.log(`   Network: http://${os.networkInterfaces().en0?.find(i => i.family === 'IPv4')?.address || 'localhost'}:${PORT}/`);
       console.log('\n🔄 The report will automatically update when files change');
       console.log('   Press Ctrl+C to stop the server\n');
       
@@ -163,4 +168,4 @@ process.on('SIGINT', () => {
 });
 
 // Export for testing
-module.exports = server;
+export default server;
