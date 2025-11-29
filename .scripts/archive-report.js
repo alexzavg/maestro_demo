@@ -48,24 +48,10 @@ function createArchive() {
   console.log(`   📁 Test results: ${TEST_RESULTS_DIR}`);
   console.log(`   🎯 Output: ${archivePath}`);
 
-  if (process.platform === 'win32') {
-    const powershellCmd = [
-      '-NoLogo',
-      '-NoProfile',
-      '-Command',
-      `Compress-Archive -Path \"${RECORDINGS_DIR}\", \"${TEST_RESULTS_DIR}\" -DestinationPath \"${archivePath}\" -Force`
-    ];
-
-    const result = spawnSync('powershell', powershellCmd, { stdio: 'inherit' });
-    if (result.status !== 0) {
-      throw new Error('Failed to create archive via PowerShell Compress-Archive');
-    }
-  } else {
-    const args = ['-r', archivePath, path.basename(RECORDINGS_DIR), path.basename(TEST_RESULTS_DIR)];
-    const result = spawnSync('zip', args, { cwd: ROOT_DIR, stdio: 'inherit' });
-    if (result.status !== 0) {
-      throw new Error('zip command failed');
-    }
+  const args = ['-r', archivePath, path.basename(RECORDINGS_DIR), path.basename(TEST_RESULTS_DIR)];
+  const result = spawnSync('zip', args, { cwd: ROOT_DIR, stdio: 'inherit' });
+  if (result.status !== 0) {
+    throw new Error('zip command failed');
   }
 
   console.log(`✅ Archive created: ${archivePath}`);

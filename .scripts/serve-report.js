@@ -12,22 +12,9 @@ const __dirname = path.dirname(__filename);
 // Function to kill processes on a specific port
 function killPort(port) {
   try {
-    if (process.platform === 'win32') {
-      // For Windows
-      const result = execSync(`netstat -ano | findstr :${port}`).toString().trim();
-      if (result) {
-        const pid = result.split(/\s+/).pop();
-        if (pid) {
-          execSync(`taskkill /F /PID ${pid}`);
-          console.log(`Killed process ${pid} on port ${port}`);
-        }
-      }
-    } else {
-      // For macOS and Linux
-      const result = execSync(`lsof -ti:${port} | xargs kill -9 2>/dev/null || true`);
-      if (result && result.length) {
-        console.log(`Killed process(es) on port ${port}`);
-      }
+    const result = execSync(`lsof -ti:${port} | xargs kill -9 2>/dev/null || true`);
+    if (result && result.length) {
+      console.log(`Killed process(es) on port ${port}`);
     }
   } catch (error) {
     // No process found or other error - that's fine
