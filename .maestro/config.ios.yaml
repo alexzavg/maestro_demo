@@ -1,0 +1,11 @@
+flows:
+  - flows/wikipedia/ios/main/*.spec.yaml
+  - flows/wikipedia/ios/conditional/*.spec.yaml
+
+excludeTags:
+  - util
+  - recordTemplate
+
+timeout: 10000
+
+testOutputDir: test-results

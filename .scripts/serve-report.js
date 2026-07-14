@@ -49,8 +49,9 @@ const server = http.createServer(async (req, res) => {
   console.log(`[${new Date().toISOString()}] ${req.method} ${req.url}`);
   
   // Handle root path by serving the test report
-  let filePath = req.url === '/' 
-    ? path.join(BASE_DIR, 'test-results', 'test-report.html')
+  // REPORT_INDEX overrides the default index (e.g. wikipedia-ios.html for the iOS Maestro report)
+  let filePath = req.url === '/'
+    ? path.join(BASE_DIR, 'test-results', process.env.REPORT_INDEX || 'test-report.html')
     : path.join(BASE_DIR, decodeURIComponent(req.url));
   
   // Prevent directory traversal

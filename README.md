@@ -6,6 +6,11 @@
   - [Detailed Usage](#detailed-usage)
   - [Reports](#reports)
   - [Troubleshooting](#troubleshooting)
+- [Run on iOS](#run-on-ios)
+  - [Quick Usage (iOS)](#quick-usage-ios)
+  - [Detailed Usage (iOS)](#detailed-usage-ios)
+  - [Reports (iOS)](#reports-ios)
+  - [Notes (iOS)](#notes-ios)
 
 # Installation (MacOS)
 
@@ -112,3 +117,82 @@ If you have Maestro Studio open and are trying to run the tests, you might get a
 This is because Maestro Studio is using the same emulator as the tests. 
 To fix this, you need to close Maestro Studio and run the tests again.
 - (Original workaround message on GitHub)[https://github.com/mobile-dev-inc/Maestro/issues/1104#issuecomment-1872975969]
+
+# Run on iOS
+
+Requirements: macOS with Xcode (incl. iOS simulators) installed. The app under test is the official
+Wikipedia iOS simulator build (`org.wikimedia.wikipedia`) from Maestro's samples bucket. It lives at
+`apps/ios/wikipedia/wikipedia.zip` (tracked in Git LFS); the unpacked `Wikipedia.app` is generated
+and gitignored. If the zip is missing (or is an un-pulled LFS pointer), setup re-downloads it automatically.
+
+## Quick Usage (iOS)
+1. Perform env cleanup (shuts down + factory-resets the simulator, kills ports/processes, deletes artifacts)
+```bash
+npm run env:cleanup:ios
+```
+2. Perform env setup (ensures the app build is present, boots the simulator, installs the app)
+```bash
+npm run env:setup:ios
+```
+3. Run the tests (writes an HTML report to `test-results/wikipedia-ios.html`)
+```bash
+npm run maestro:test:wikipedia:ios
+```
+4. Serve the report on port 2077 (or `npm run report:open:ios` to open the file directly)
+```bash
+npm run report:serve:ios
+```
+5. Perform env teardown (uninstall app + stop simulator), or run `env:cleanup:ios` for a fully clean slate
+```bash
+npm run env:teardown:ios
+```
+### IMPORTANT
+Like on Android, perform `env:cleanup:ios` before each run — it factory-resets the simulator so every run
+starts from a brand-new clean environment. Repeat the cycle cleanup → setup → test → report → teardown.
+
+Alternatively, run the whole cycle (setup → test → teardown) in one shot:
+```bash
+npm run test:ios
+```
+
+## Detailed Usage (iOS)
+1. Download/unpack the app build (no-op when already present)
+```bash
+npm run ios:download:wikipedia
+```
+2. Start the iOS simulator (default: iPhone 16 Pro; override with `IOS_SIMULATOR_NAME="iPhone 16"`)
+```bash
+npm run maestro:device:start:ios
+```
+3. Install the app
+```bash
+npm run ios:install:wikipedia
+```
+4. Run tests
+```bash
+npm run maestro:test:wikipedia:ios
+```
+5. Uninstall the app
+```bash
+npm run ios:uninstall:wikipedia
+```
+6. Stop the simulator
+```bash
+npm run maestro:device:stop:ios
+```
+7. (Optional) Factory-reset the simulator
+```bash
+npm run ios:erase:simulator
+```
+
+## Reports (iOS)
+- `npm run report:serve:ios` — serves `test-results/wikipedia-ios.html` at http://localhost:2077/
+- `npm run report:open:ios` — opens the HTML report directly
+
+## Notes (iOS)
+- iOS flows live in `.maestro/flows/wikipedia/ios/` with iOS page objects in `.maestro/src/pages/ios/`
+  (iOS uses accessibility ids/labels, not Android resource-ids), driven by `.maestro/config.ios.yaml`.
+- `Third Flow.spec.yaml` fails **on purpose** (same demo convention as Android), so the suite exit code is non-zero by design.
+- The "App not installed"/driver-connection issue from the Android troubleshooting section applies to iOS too:
+  close Maestro Studio (and any other running Maestro instance, e.g. an MCP session) before running tests,
+  otherwise flows may fail with `Failed to connect to /127.0.0.1:7001`.

@@ -1,6 +1,6 @@
 flows:
-  - flows/wikipedia/main/*.spec.yaml
-  - flows/wikipedia/conditional/*.spec.yaml
+  - flows/wikipedia/android/main/*.spec.yaml
+  - flows/wikipedia/android/conditional/*.spec.yaml
 
 excludeTags:
   - util

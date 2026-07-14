@@ -111,8 +111,9 @@ async function recordFlow(flowPath) {
 async function main() {
   console.log('🚀 Starting Maestro flow recording...');
   
-  // If no specific flows are defined, search for all YAML files in .maestro/flows
-  const defaultSearchDir = path.join(__dirname, '..', '.maestro/flows');
+  // If no specific flows are defined, search for all YAML files in the Android flows tree.
+  // iOS flows (.maestro/flows/wikipedia/ios) are excluded — this recorder targets the Android emulator.
+  const defaultSearchDir = path.join(__dirname, '..', '.maestro/flows/wikipedia/android');
   const flowsToRecord = flowPaths.length > 0 
     ? flowPaths.map(p => path.resolve(p))
     : findYamlFiles(defaultSearchDir);

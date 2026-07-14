@@ -1,0 +1,40 @@
+appId: ${appId}
+tags:
+  - smokeTest
+---
+- launchApp:
+    clearState: true
+
+- runScript:
+    file: "../../../../src/pages/ios/MainScreen.page.js"
+- runScript:
+    file: "../../../../src/pages/ios/LaunchStepper.page.js"
+
+- runFlow:
+    when:
+      visible:
+        text: ${output.launchStepper.skipBtn}
+    commands:
+        - tapOn:
+            text: ${output.launchStepper.skipBtn}
+
+- runFlow:
+    when:
+      visible:
+        text: ${output.mainScreen.yearInReviewText}
+    commands:
+        - tapOn:
+            text: ${output.mainScreen.yearInReviewDoneBtn}
+
+- runFlow:
+    when:
+      visible:
+        text: ${output.mainScreen.loggedOutText}
+    commands:
+        - tapOn:
+            text: ${output.mainScreen.loggedOutContinueBtn}
+
+- assertVisible:
+    text: ${output.mainScreen.searchBar}
+- assertVisible:
+    id: ${output.mainScreen.exploreTab}

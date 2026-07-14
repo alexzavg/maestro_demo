@@ -18,7 +18,7 @@ node_modules/
 .idea/
 .vscode/
 
-apps/ios
-.scripts/ios/ios_test_runner.sh
+# Unpacked iOS app bundle (generated from the LFS-tracked wikipedia.zip by .scripts/ios/download_app.sh)
+apps/ios/wikipedia/Wikipedia.app/
 android_emulator_logs.txt
 .env

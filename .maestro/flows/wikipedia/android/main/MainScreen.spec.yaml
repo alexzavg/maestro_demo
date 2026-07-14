@@ -6,9 +6,9 @@ tags:
     clearState: true
 
 - runScript: 
-    file: "../../../src/pages/MainScreen.page.js"
+    file: "../../../../src/pages/android/MainScreen.page.js"
 - runScript: 
-    file: "../../../src/pages/LaunchStepper.page.js"
+    file: "../../../../src/pages/android/LaunchStepper.page.js"
 
 - runFlow:
     when:
