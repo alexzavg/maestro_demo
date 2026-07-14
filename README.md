@@ -19,10 +19,14 @@
 ```bash
 chmod +x .scripts/
 ```
-3. Install Maestro
+3. Install Maestro (**2.x required** for the Maestro Viewer / MCP integration)
 ```bash
 brew tap mobile-dev-inc/tap
 brew install maestro
+```
+The npm scripts invoke `$HOME/.maestro/bin/maestro`; if you installed via Homebrew only, symlink it:
+```bash
+mkdir -p $HOME/.maestro/bin && ln -sf /opt/homebrew/bin/maestro $HOME/.maestro/bin/maestro
 ```
 
 # Run on Android
@@ -188,6 +192,22 @@ npm run ios:erase:simulator
 ## Reports (iOS)
 - `npm run report:serve:ios` — serves `test-results/wikipedia-ios.html` at http://localhost:2077/
 - `npm run report:open:ios` — opens the HTML report directly
+
+## Recordings (iOS, failures only)
+`npm run record:all:ios` runs every iOS flow via `maestro record` and keeps `.mp4` videos **of failed flows only**
+in `recordings/` (named `{flowName}-failed.mp4`); recordings of passed flows are discarded. The custom
+recordings report (`report:generate` → `test-results/test-report.html`, also reachable while `report:serve:ios`
+is running at http://localhost:2077/test-results/test-report.html) picks these videos up automatically.
+Note: recording re-runs the flows (Maestro has no local "record during test" flag), so use it as a separate
+evidence-gathering pass after/instead of `maestro:test:wikipedia:ios`.
+
+## Maestro Viewer (live execution in the browser)
+The Maestro MCP server (registered in `.mcp.json`, requires **Maestro CLI 2.x**) hosts the **Maestro Viewer** —
+a web app showing the live device screen, current flow commands, and tool activity — pinned in this repo to
+**http://127.0.0.1:10001/** via `--viewer-port 10001` (by default Maestro picks the first free port in 9999–11000).
+It is only up while an MCP session is active (e.g. Claude Code / VS Code with the maestro MCP server running) and
+shows MCP-driven executions; for plain CLI runs use Maestro Studio instead (`npm run maestro:inspect`, port 9999).
+After changing `.mcp.json`, reload the IDE window so the MCP server restarts with the new args.
 
 ## Notes (iOS)
 - iOS flows live in `.maestro/flows/wikipedia/ios/` with iOS page objects in `.maestro/src/pages/ios/`

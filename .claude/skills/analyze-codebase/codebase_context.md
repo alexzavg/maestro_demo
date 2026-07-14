@@ -6,12 +6,12 @@
 
 This repository is a **mobile UI automation framework demo built on Maestro** (mobile-dev-inc), testing the **Wikipedia app** on Android (primary) and iOS (secondary). It is not an app codebase — the apps under test are prebuilt binaries checked into the repo.
 
-- **Test framework:** Maestro CLI (installed via Homebrew or `curl get.maestro.mobile.dev`; invoked from `$HOME/.maestro/bin/maestro`)
+- **Test framework:** Maestro CLI **2.6.1** via Homebrew (`mobile-dev-inc/tap/maestro`); scripts invoke `$HOME/.maestro/bin/maestro`, which is a symlink to `/opt/homebrew/bin/maestro` (the old curl-installed 1.41.0 is kept as `~/.maestro/bin/maestro-1.41.0.bak`)
 - **Tooling/runner layer:** Node.js ESM scripts (`package.json` `"type": "module"`), devDependencies: `@devicecloud.dev/dcd`, `dotenv`, `maestro`, `nodemailer`, `open`
 - **App under test (Android):** `org.wikipedia` — APK at `apps/android/wikipedia/wikipedia.apk` (Git LFS)
 - **App under test (iOS):** `org.wikimedia.wikipedia` — official Maestro-samples simulator build (v7.8.8, universal x86_64+arm64) at `apps/ios/wikipedia/wikipedia.zip` (Git LFS); the unpacked `Wikipedia.app` is generated/gitignored and auto-(re)created by `.scripts/ios/download_app.sh` (falls back to downloading from `https://storage.googleapis.com/mobile.dev/samples/wikipedia.zip`)
 - **Optional local LLM tooling:** `ollama:*` npm scripts (serve/run `dolphin-mistral`/kill), plus `maestro:chat` and an AI report (`report:ai:open`)
-- **MCP integration:** project-scoped `.mcp.json` registers the built-in Maestro MCP server (`${HOME}/.maestro/bin/maestro mcp`, STDIO). It exposes device/automation tools to Claude Code: `list_devices`, `start_device`, `launch_app`, `stop_app`, `tap_on`, `input_text`, `back`, `take_screenshot`, `inspect_view_hierarchy`, `run_flow`, `run_flow_files`, `check_flow_syntax`, `cheat_sheet`, `query_docs`. Approve the server when prompted at session start.
+- **MCP integration:** project-scoped `.mcp.json` registers the built-in Maestro MCP server (`${HOME}/.maestro/bin/maestro mcp --viewer-port 10001`, STDIO). It exposes device/automation tools to Claude Code: `list_devices`, `start_device`, `launch_app`, `stop_app`, `tap_on`, `input_text`, `back`, `take_screenshot`, `inspect_view_hierarchy`, `run_flow`, `run_flow_files`, `check_flow_syntax`, `cheat_sheet`, `query_docs`. Approve the server when prompted at session start. While an MCP session is active, the **Maestro Viewer** (live device screen + flow command sequence) is served at `http://127.0.0.1:10001/` (pinned; Maestro's default is the first free port in 9999–11000). It shows MCP-driven executions only — plain CLI `maestro test` runs don't appear there (use Maestro Studio, port 9999, for interactive inspection). ⚠️ Running two Maestro instances at once (MCP + CLI test/Studio) causes device-driver contention (`Failed to connect to /127.0.0.1:7001` on iOS, "App not installed" on Android).
 
 ## Repository Map
 
@@ -34,7 +34,9 @@ This repository is a **mobile UI automation framework demo built on Maestro** (m
   serve-report.js            Generates + serves report on port 2077 (REPORT_INDEX env var overrides index page)
   archive-report.js          Zips report into test-report/
   send-report-email.js       Emails the zip via Gmail/nodemailer
-  record-flows.js            Records all ANDROID flows to recordings/ (drives report pipeline)
+  record-flows.js            Records flows to recordings/ (drives report pipeline). Defaults to the Android
+                             tree; parameterized via MAESTRO_FLOWS_DIR / MAESTRO_CONFIG / MAESTRO_APP_ID /
+                             RECORD_FAILURES_ONLY=1 (keep failed-flow videos only) — used by record:all:ios
   kill_ports.sh              Kills PIDs on ADB/emulator/studio/report ports
   kill_processes.sh          pkill maestro/qemu/emulator/adb/AndroidStudio
   ios/download_app.sh        Ensures wikipedia.zip present (re-downloads if missing/LFS pointer) + unpacks Wikipedia.app
@@ -91,6 +93,7 @@ Test execution & authoring:
 | `maestro:inspect` | Maestro Studio (element inspector, port 9999) |
 | `maestro:record:wikipedia` | Record LaunchStepper flow to `recordings/LaunchStepper.mp4` |
 | `record:all` | Delete recordings, then `node .scripts/record-flows.js` (records every ANDROID flow) |
+| `record:all:ios` | Same recorder against the iOS tree with `RECORD_FAILURES_ONLY=1` — re-runs all iOS flows via `maestro record` and keeps `.mp4`s of FAILED flows only (`{flow}-failed.mp4` in recordings/, picked up by the custom recordings report) |
 | `maestro:chat` | `maestro chat` (AI assistant) |
 | `test:ios` | One-shot iOS cycle via `.scripts/ios/ios_test_runner.sh`: env:setup:ios → test → env:teardown:ios |
 
@@ -139,6 +142,7 @@ Implemented 2026-07-14 as a full mirror of the Android lifecycle (no hardcoded m
 
 - **Run cycle:** always `env:cleanup` → `env:setup` → `maestro:test:wikipedia` → `env:teardown` (append `:ios` to each for iOS). Cleanup before each run avoids stale ports/processes/emulators (README "IMPORTANT" notes).
 - **Tags:** `smokeTest` on all real flows; `util` and `recordTemplate` are reserved exclusion tags (excluded in config and every cloud CI run).
+- **package.json script ordering convention:** Android-related scripts first, then iOS-related scripts, then shared utilities (inspect/chat, generic reports, delete/kill, ollama). Keep new scripts in their platform group.
 - **Known issue:** "App not installed" error when Maestro Studio is open — Studio holds the same emulator; close Studio and re-run (README Troubleshooting, upstream issue mobile-dev-inc/Maestro#1104).
 - **`Third Flow.spec.yaml` fails on purpose** (asserts `invalid_id`) — a demo of failure reporting.
 - **Selectors live only in page objects** (`.maestro/src/pages/<platform>/*.page.js`); when adding a flow, create/extend a page file and load it with `runScript` rather than hardcoding ids in YAML.

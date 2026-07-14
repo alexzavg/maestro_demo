@@ -3,7 +3,7 @@
     "maestro": {
       "type": "stdio",
       "command": "${HOME}/.maestro/bin/maestro",
-      "args": ["mcp"]
+      "args": ["mcp", "--viewer-port", "10001"]
     }
   }
 }

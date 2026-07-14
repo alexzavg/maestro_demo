@@ -7,9 +7,16 @@ import { fileURLToPath } from 'url';
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-// Configuration
+// Configuration — defaults target Android; override via env vars for other platforms, e.g.:
+//   MAESTRO_FLOWS_DIR=.maestro/flows/wikipedia/ios MAESTRO_CONFIG=.maestro/config.ios.yaml \
+//   MAESTRO_APP_ID=org.wikimedia.wikipedia RECORD_FAILURES_ONLY=1 node .scripts/record-flows.js
 const MAESTRO_BIN = path.join(os.homedir(), '.maestro/bin/maestro');
-const CONFIG_PATH = path.join(__dirname, '..', '.maestro/config.yaml');
+const CONFIG_PATH = process.env.MAESTRO_CONFIG
+  ? path.resolve(process.env.MAESTRO_CONFIG)
+  : path.join(__dirname, '..', '.maestro/config.yaml');
+const APP_ID = process.env.MAESTRO_APP_ID || 'org.wikipedia';
+// Keep recordings of failed flows only; recordings of passed flows are discarded
+const FAILURES_ONLY = process.env.RECORD_FAILURES_ONLY === '1';
 const RECORDINGS_DIR = path.join(__dirname, '..', 'recordings');
 
 // Define your flow paths here
@@ -64,13 +71,20 @@ async function recordFlow(flowPath) {
       `"${flowPath}"`,
       `"${tempOutputFile}"`,
       `--config "${CONFIG_PATH}"`,
-      '-e appId=org.wikipedia'
+      `-e appId=${APP_ID}`
     ].join(' ');
     
     console.log(`   Command: ${recordCmd}`);
     
     try {
       execSync(recordCmd, { stdio: 'inherit' });
+      if (FAILURES_ONLY) {
+        if (fs.existsSync(tempOutputFile)) {
+          fs.unlinkSync(tempOutputFile);
+        }
+        console.log(`✅ Passed: ${flowName} (recording discarded — failures-only mode)`);
+        return { success: true, passed: true };
+      }
       const finalOutputFile = path.join(RECORDINGS_DIR, `${flowName}-passed.mp4`);
       if (fs.existsSync(tempOutputFile)) {
         if (fs.existsSync(finalOutputFile)) {
@@ -111,9 +125,11 @@ async function recordFlow(flowPath) {
 async function main() {
   console.log('🚀 Starting Maestro flow recording...');
   
-  // If no specific flows are defined, search for all YAML files in the Android flows tree.
-  // iOS flows (.maestro/flows/wikipedia/ios) are excluded — this recorder targets the Android emulator.
-  const defaultSearchDir = path.join(__dirname, '..', '.maestro/flows/wikipedia/android');
+  // If no specific flows are defined, search for all YAML files in the platform flows tree
+  // (default: Android; set MAESTRO_FLOWS_DIR to record another platform, e.g. the iOS tree).
+  const defaultSearchDir = process.env.MAESTRO_FLOWS_DIR
+    ? path.resolve(process.env.MAESTRO_FLOWS_DIR)
+    : path.join(__dirname, '..', '.maestro/flows/wikipedia/android');
   const flowsToRecord = flowPaths.length > 0 
     ? flowPaths.map(p => path.resolve(p))
     : findYamlFiles(defaultSearchDir);
