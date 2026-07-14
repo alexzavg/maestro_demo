@@ -60,7 +60,7 @@ jobs:
           script: |
             set -eu
             npm run android:install:wikipedia
-            npm run record:all
+            npm run record:all:android
 
       - name: Generate HTML report
         id: generate_report
@@ -117,7 +117,7 @@ jobs:
       - name: Fail if recordings failed
         if: steps.record_flows.outcome == 'failure'
         run: |
-          echo "record:all reported failures"
+          echo "record:all:android reported failures"
           exit 1
 
       - name: Notify Slack

@@ -77,9 +77,9 @@ Environment lifecycle (recommended cycle: cleanup → setup → test → teardow
 
 | Script | What it does |
 |---|---|
-| `env:cleanup` | teardown + kill ports/processes/emulators + delete artifacts (Android) |
-| `env:setup` | start Android emulator (`maestro start-device`, API 34, en_US) + install APK |
-| `env:teardown` | uninstall app + stop emulator |
+| `env:cleanup:android` | teardown + kill ports/processes/emulators + delete artifacts |
+| `env:setup:android` | start Android emulator (`maestro start-device`, API 34, en_US) + install APK |
+| `env:teardown:android` | uninstall app + stop emulator |
 | `env:cleanup:ios` | teardown:ios + factory-reset simulator + kill ports/processes + delete artifacts |
 | `env:setup:ios` | ensure app build (download/unpack) + boot simulator + install app |
 | `env:teardown:ios` | uninstall app + stop simulator |
@@ -88,16 +88,16 @@ Test execution & authoring:
 
 | Script | What it does |
 |---|---|
-| `maestro:test:wikipedia` | `maestro test .maestro --config .maestro/config.yaml -e appId=org.wikipedia --format html --output test-results/wikipedia.html` |
+| `maestro:test:wikipedia:android` | `maestro test .maestro --config .maestro/config.yaml -e appId=org.wikipedia --format html --output test-results/wikipedia.html` |
 | `maestro:test:wikipedia:ios` | `maestro test .maestro --config .maestro/config.ios.yaml -e appId=org.wikimedia.wikipedia --format html --output test-results/wikipedia-ios.html` |
 | `maestro:inspect` | Maestro Studio (element inspector, port 9999) |
-| `maestro:record:wikipedia` | Record LaunchStepper flow to `recordings/LaunchStepper.mp4` |
-| `record:all` | Delete recordings, then `node .scripts/record-flows.js` (records every ANDROID flow) |
+| `maestro:record:wikipedia:android` | Record LaunchStepper flow to `recordings/LaunchStepper.mp4` |
+| `record:all:android` | Delete recordings, then `node .scripts/record-flows.js` (records every ANDROID flow) |
 | `record:all:ios` | Same recorder against the iOS tree with `RECORD_FAILURES_ONLY=1` — re-runs all iOS flows via `maestro record` and keeps `.mp4`s of FAILED flows only (`{flow}-failed.mp4` in recordings/, picked up by the custom recordings report) |
 | `maestro:chat` | `maestro chat` (AI assistant) |
 | `test:ios` | One-shot iOS cycle via `.scripts/ios/ios_test_runner.sh`: env:setup:ios → test → env:teardown:ios |
 
-Device/app management — Android: `maestro:device:start:android`, `maestro:device:stop` (`adb emu kill`), `android:install:wikipedia` (`adb install -t -r -g`), `android:uninstall:wikipedia`. iOS: `maestro:device:start:ios` / `maestro:device:stop:ios` (simctl boot/shutdown via `.scripts/ios/`), `ios:download:wikipedia`, `ios:install:wikipedia` / `ios:uninstall:wikipedia` (`xcrun simctl (un)install booted`), `ios:erase:simulator`. Target simulator defaults to "iPhone 16 Pro"; override with the `IOS_SIMULATOR_NAME` env var.
+Device/app management — Android: `maestro:device:start:android`, `maestro:device:stop:android` (`adb emu kill`), `android:install:wikipedia` (`adb install -t -r -g`), `android:uninstall:wikipedia`. iOS: `maestro:device:start:ios` / `maestro:device:stop:ios` (simctl boot/shutdown via `.scripts/ios/`), `ios:download:wikipedia`, `ios:install:wikipedia` / `ios:uninstall:wikipedia` (`xcrun simctl (un)install booted`), `ios:erase:simulator`. Target simulator defaults to "iPhone 16 Pro"; override with the `IOS_SIMULATOR_NAME` env var.
 
 Cleanup/kill: `kill:ports` (`.scripts/kill_ports.sh` — ports 5037, 5554–5561, 5584, 5585, 9999, 2077), `kill:processes` (`.scripts/kill_processes.sh` — pkill maestro, qemu-system, emulator, adb, Android Emulator, AndroidStudio, studio), `kill:emulators` (adb emu kill per device).
 
@@ -117,14 +117,14 @@ Local LLM: `ollama:serve`, `ollama:run` (dolphin-mistral), `ollama:kill`.
 
 Required `.env` variables (names only — values are secrets): `EMAIL_USER`, `EMAIL_PASS`, `MANAGER_EMAIL`, `LEAD_EMAIL`. Recipients are manager + lead.
 
-Maestro's own HTML result additionally lands at `test-results/wikipedia.html` (from `maestro:test:wikipedia`); AI reports appear as `test-results/*/ai-report-*.spec.html`.
+Maestro's own HTML result additionally lands at `test-results/wikipedia.html` (from `maestro:test:wikipedia:android`); AI reports appear as `test-results/*/ai-report-*.spec.html`.
 
 ## CI/CD Workflows
 
 All four workflows are **manual (`workflow_dispatch`) only**, Android only, `ubuntu-latest`:
 
 - **android-tests-no-cloud.yaml** — local headless emulator run: enables KVM, Temurin Java 21, installs Maestro CLI, then `reactivecircus/android-emulator-runner@v2` (API 34, x86_64, google_apis, no-window/swiftshader) runs the tests.
-- **android-tests-no-cloud-report.yaml** — same emulator setup (with `lfs: true` checkout) but runs the full reporting pipeline: builds `.env` from GitHub secrets, `npm ci`, `record:all` → `report:generate` → `archive-report.js` → `send-report-email.js`, uploads `test-results` as an artifact, and publishes recordings/reports to the **gh-pages** branch via `peaceiris/actions-gh-pages@v4`.
+- **android-tests-no-cloud-report.yaml** — same emulator setup (with `lfs: true` checkout) but runs the full reporting pipeline: builds `.env` from GitHub secrets, `npm ci`, `record:all:android` → `report:generate` → `archive-report.js` → `send-report-email.js`, uploads `test-results` as an artifact, and publishes recordings/reports to the **gh-pages** branch via `peaceiris/actions-gh-pages@v4`.
 - **android-tests-maestro-cloud.yaml** — `mobile-dev-inc/action-maestro-cloud@v2`: uploads the APK + `.maestro` workspace to Maestro Cloud (secrets `MAESTRO_API_KEY`, `MAESTRO_PROJECT_ID`), API 34, en_US, `exclude-tags: util,recordTemplate`, timeout 60000.
 - **android-tests-dcd-cloud.yaml** — `devicecloud-dev/device-cloud-for-maestro@v1` (secret `DCD_API_KEY`): pixel-6, API 34, `include-tags: smokeTest`, `exclude-tags: util,recordTemplate`, retry 1, HTML report, downloads ALL artifacts.
 
@@ -140,7 +140,7 @@ Implemented 2026-07-14 as a full mirror of the Android lifecycle (no hardcoded m
 
 ## Conventions & Gotchas
 
-- **Run cycle:** always `env:cleanup` → `env:setup` → `maestro:test:wikipedia` → `env:teardown` (append `:ios` to each for iOS). Cleanup before each run avoids stale ports/processes/emulators (README "IMPORTANT" notes).
+- **Run cycle:** always `env:cleanup:<platform>` → `env:setup:<platform>` → `maestro:test:wikipedia:<platform>` → `env:teardown:<platform>` (`:android` or `:ios`). Cleanup before each run avoids stale ports/processes/emulators (README "IMPORTANT" notes).
 - **Tags:** `smokeTest` on all real flows; `util` and `recordTemplate` are reserved exclusion tags (excluded in config and every cloud CI run).
 - **package.json script ordering convention:** Android-related scripts first, then iOS-related scripts, then shared utilities (inspect/chat, generic reports, delete/kill, ollama). Keep new scripts in their platform group.
 - **Known issue:** "App not installed" error when Maestro Studio is open — Studio holds the same emulator; close Studio and re-run (README Troubleshooting, upstream issue mobile-dev-inc/Maestro#1104).

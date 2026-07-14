@@ -34,19 +34,19 @@ mkdir -p $HOME/.maestro/bin && ln -sf /opt/homebrew/bin/maestro $HOME/.maestro/b
 ## Quick Usage
 1. Perform env cleanup
 ```bash
-npm run env:cleanup
+npm run env:cleanup:android
 ```
 2. Perform env setup
 ```bash
-npm run env:setup
+npm run env:setup:android
 ```
 3. Run the tests
 ```bash
-npm run maestro:test:wikipedia
+npm run maestro:test:wikipedia:android
 ```
 4. Perform env teardown
 ```bash
-npm run env:teardown
+npm run env:teardown:android
 ```
 ### IMPORTANT
 It is suggested to perform env cleanup before each run to avoid any potential issues with ports, processes and emulators.
@@ -67,7 +67,7 @@ npm run report:ai:open
 ```
 - Record a test (this example will record a test for the `LaunchStepper` spec and save it to the `recordings` dir)
 ```bash
-npm run maestro:record:wikipedia
+npm run maestro:record:wikipedia:android
 ```
 
 ## Detailed Usage
@@ -82,7 +82,7 @@ npm run android:install:wikipedia (replace 'wikipedia' with your app apk)
 ```
 4. Run tests
 ```bash
-npm run maestro:test:wikipedia (adjust paths for .maestro/flows and .maestro/configs with your own settings)
+npm run maestro:test:wikipedia:android (adjust paths for .maestro/flows and .maestro/configs with your own settings)
 ```
 5. Uninstall the app
 ```bash
@@ -90,7 +90,7 @@ npm run android:uninstall:wikipedia (replace 'wikipedia' with your app apk)
 ```
 6. Stop the emulator
 ```bash
-npm run maestro:device:stop
+npm run maestro:device:stop:android
 ```
 
 ## Reports
